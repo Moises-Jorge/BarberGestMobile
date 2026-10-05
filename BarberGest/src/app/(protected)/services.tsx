@@ -1,0 +1,147 @@
+import { Ionicons } from "@expo/vector-icons";
+import MaskedView from "@react-native-masked-view/masked-view";
+import { LinearGradient } from "expo-linear-gradient";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { Button, ScrollView, StatusBar, StyleSheet, Text, Image, TouchableOpacity, View, TextInput, useWindowDimensions } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { styles } from "../../styles";
+import { SaveButton, SaveButtonLabel, SaveButtonRoot, SaveButtonSaved } from "@/shared/components/save-button";
+import { mockBarbeiros, mockServicos } from "./mockData";
+import { act, useState } from "react";
+import { saveAgendamento } from "./agendamento";
+
+export default function Services() {
+	const { width } = useWindowDimensions();
+	const [nameDobarb, setNameDobarb] = useState("");
+	const WIDTH = width - 50;
+	const route = useRouter();
+	const [active, setActive] = useState(false);
+	const [hora, setHora] = useState("");
+	const [min, setMin] = useState("");
+	const [focused, setFocused] = useState<"hora" | "min" | null>(null);;
+	const [selectedId, setSelectedId] = useState<string | null>(null);
+	const {name, price, time} = useLocalSearchParams()
+	function wait(arg0: number): void | Promise<void> {
+		throw new Error("Function not implemented.");
+	}
+
+  return (
+	<SafeAreaView style={[{backgroundColor: "#000000ff", flex: 1, gap: 0}]}>
+		<StatusBar backgroundColor="#000000ff" barStyle="light-content" />
+		<View style = {{flexDirection: "row", justifyContent: "space-between", paddingBottom: 8}}>
+		<View style={{flexDirection: "row", alignSelf: "flex-start", left: 20, marginTop: 20, gap: 10}}>
+			<TouchableOpacity onPress={()=> route.navigate("/")}
+			style={{backgroundColor: "#141414ff",
+				width: 40,
+				height: 40,
+				borderColor: "#1d1d1dff",
+        		borderWidth: 2,
+				borderRadius: 20,
+				alignItems: "center",
+				justifyContent: "center"
+				}}>
+					<Ionicons
+						name="arrow-back"
+						color="cyan"
+						size={20}
+					/>
+			</TouchableOpacity>
+			<Text style={{color: "white", fontSize: 30, fontWeight: "bold"}}>Detalhes</Text>
+		</View>
+	  </View>
+		<ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
+	  		{name &&
+				<View style={[styles.barbImageCard]}>
+					<Image
+						source={require("../../../assets/images/barbershop.jpeg")}
+						style={styles.barbImg}
+					/>
+					<View style={[styles.wrapper, styles.barbInfo]} pointerEvents="box-none">
+						{/* <MaskedView
+								style={[StyleSheet.absoluteFill]}
+								pointerEvents="none"
+								maskElement={ */}
+								  <LinearGradient
+									colors={["transparent", "#131313ff"]}
+									locations={[0, 1]}
+									style={[StyleSheet.absoluteFill, {borderBottomLeftRadius: 30, borderBottomRightRadius: 30}]}
+								  />
+						<Text style={styles.barbname}>{name}</Text>
+						<Text style={styles.startTime}>{price}Kz | {time}min</Text>
+					</View>
+				</View>
+			}
+			<View style={styles.scheduleInfo}>
+				<View>
+					<Text style={{color: "white",
+						fontSize: 20,
+						fontWeight: "bold",
+						marginTop: 20,
+						marginLeft: 20,
+						}}>Descrição</Text>
+						<Text style={{color: "white",
+								fontSize: 14,
+								padding: 20}}>
+							Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum officia illum laborum aperiam eum deleniti fuga rerum aut explicabo, sint perferendis! Sequi dolor omnis libero laborum labore quasi nam eveniet.
+						</Text>
+				</View>
+					<Text style={{color: "white",
+						fontSize: 20,
+						fontWeight: "bold",
+						marginTop: 20,
+						marginLeft: 20,
+						marginBottom: 20,
+						}}>Escolha o seu barbeiro</Text>
+				<ScrollView 
+					horizontal
+					showsHorizontalScrollIndicator={false}>
+					{mockBarbeiros.map((barbeiro) => {
+						const active = selectedId === barbeiro.id;
+						return (
+						<TouchableOpacity onPress={() =>
+							{setSelectedId(barbeiro.id), setNameDobarb(barbeiro.name)}}
+							key={barbeiro.id} style={[styles.barCard3, {borderColor: active ? "cyan" : "#1d1d1dff", borderWidth: 2}]}>
+							<Image source={barbeiro.img} style={styles.barbImg2} />
+							<Text style={styles.barbname}>{barbeiro.name}</Text>
+						</TouchableOpacity>
+						)})}
+				</ScrollView>
+			</View>
+			<Text style={{color: "white",
+				fontSize: 20,
+				fontWeight: "bold",
+				marginTop: 20,
+				marginLeft: 20,
+				marginBottom: 20,
+				}}>Escolha o horario</Text>
+			<View style={{ flexDirection: "row", justifyContent: "space-evenly"}}>
+				<View style={{flexDirection: "row", gap: 10,}}>
+					<Text style={{color: "white", alignSelf: "center"}}>Hora</Text>
+					<TextInput value={hora} onChangeText={setHora} onFocus={() => setFocused("hora")} onBlur={() => setFocused(null)} keyboardType="numeric" style={[styles.input, {width: 100, textAlign: "center", borderColor: focused === "hora" ? "cyan" : "#1d1d1dff", borderWidth: 2}]}/>
+				</View>
+				<View style={{flexDirection: "row", gap: 10,}}>
+					<Text style={{color: "white", alignSelf: "center"}}>Min</Text>
+					<TextInput value={min} onChangeText={setMin} onFocus={() => setFocused("min")} onBlur={() => setFocused(null)} keyboardType="numeric" style={[styles.input, {width: 100, textAlign: "center", borderColor: focused === "min" ? "cyan" : "#1d1d1dff", borderWidth: 2}]}/>
+				</View>
+			</View>
+			<View>
+				<SaveButton.Root
+					style={{alignSelf: "center", marginTop: 30, width: WIDTH}}
+					onSave={() => wait(1000)}
+					//resetAfter={2000}
+					onSaved={() => saveAgendamento({barbeiroId: nameDobarb})}
+					>
+					<SaveButton.Label
+					>
+						Agendar
+					</SaveButton.Label>
+					<SaveButton.Saved
+					>
+						Agendado!
+					</SaveButton.Saved>
+        		</SaveButton.Root>
+			</View>
+		</ScrollView>
+	</SafeAreaView>
+  )
+}
