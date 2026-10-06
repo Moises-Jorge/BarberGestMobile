@@ -300,7 +300,7 @@ const SaveButtonRoot: React.FC<ISaveButtonRoot> &
       >
         <Animated.View pointerEvents="none" style={[styles.layer, labelStyle]}>
           <Text
-            style={[styles.label, { color: c.label }, labelSlotStyle]}
+            style={[styles.label, { color: "black" }, labelSlotStyle]}
             numberOfLines={1}
           >
             {labelText}
@@ -341,7 +341,7 @@ const SaveButtonRoot: React.FC<ISaveButtonRoot> &
           style={[styles.layer, savedTextStyle]}
         >
           <Text
-            style={[styles.saved, { color: c.savedLabel }, savedSlotStyle]}
+            style={[styles.saved, { color: "black" }, savedSlotStyle]}
             numberOfLines={1}
           >
             {savedText}

@@ -6,7 +6,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
-import { mockBarbeiros, mockServicos } from "./mockData";
+import { mockBarbeiros, mockServicos } from "./data";
 
 export default function Settings() {
   const { signOut, name } = useAuth();

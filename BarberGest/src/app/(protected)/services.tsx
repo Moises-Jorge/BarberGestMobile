@@ -6,7 +6,7 @@ import { Button, ScrollView, StatusBar, StyleSheet, Text, Image, TouchableOpacit
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
 import { SaveButton, SaveButtonLabel, SaveButtonRoot, SaveButtonSaved } from "@/shared/components/save-button";
-import { mockBarbeiros, mockServicos } from "./mockData";
+import { mockBarbeiros, mockServicos } from "./data";
 import { act, useState } from "react";
 import { saveAgendamento } from "./agendamento";
 
@@ -62,9 +62,9 @@ export default function Services() {
 								pointerEvents="none"
 								maskElement={ */}
 								  <LinearGradient
-									colors={["transparent", "#131313ff"]}
+									colors={["transparent", "#000000ff"]}
 									locations={[0, 1]}
-									style={[StyleSheet.absoluteFill, {borderBottomLeftRadius: 30, borderBottomRightRadius: 30}]}
+									style={[StyleSheet.absoluteFill, {opacity: .7}]}
 								  />
 						<Text style={styles.barbname}>{name}</Text>
 						<Text style={styles.startTime}>{price}Kz | {time}min</Text>

@@ -88,8 +88,8 @@ export const styles = StyleSheet.create({
     barCard:{
         /* backgroundColor: "#141414ff",
         borderColor: "#1d1d1dff",
-        borderWidth: 2,
-        padding: 20, */
+        borderWidth: 2,*/
+        //padding: 20, 
         borderRadius: 30,
         height: 200,
         marginLeft: 10,
@@ -194,7 +194,7 @@ export const styles = StyleSheet.create({
     },
     barbInfo:
     {
-        padding: 20,
+        padding: 15,
     },
     bar:
     {

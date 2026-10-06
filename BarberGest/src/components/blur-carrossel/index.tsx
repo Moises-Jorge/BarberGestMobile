@@ -44,7 +44,7 @@ const CarouselItem = <ItemT,>({
     const opacity = interpolate(
       scrollX.value,
       inputRange,
-      [0.5, 1, 0.5],
+      [0.7, 1, 0.7],
       Extrapolation.CLAMP,
     );
 

@@ -3,14 +3,38 @@ import { useAuth } from "@/hooks/useAuth";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { Pressable, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View, Image, Button, Dimensions } from "react-native";
+import { Pressable, ScrollView, StatusBar, StyleSheet, FlatList, Text, TouchableOpacity, View, Image, Button, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
-import { mockBarbeiros, mockServicos } from "./mockData";
+import { mockBarbeiros, mockServicos } from "./data";
 import { saveAgendamento } from "./agendamento";
+import { useEffect, useState } from "react";
+
+const url = "http://10.12.6.9:3000/api";
 
 export default function Index() {
-  const { signOut, name } = useAuth();
+	const { signOut, name } = useAuth();
+	const [datas, setDatas] = useState([]);
+	useEffect(() => {
+	async function logBarbers ()
+	{
+		try
+		{
+			const response = await fetch(`${url}/barbeiros`);
+			if (response.status === 200)
+			{
+				const responseJson = await response.json();
+				setDatas(responseJson.barbeiros)
+				console.log(responseJson)
+			}
+		}
+		catch(error)
+		{
+			console.log(error);
+		}
+	}
+		logBarbers()
+	}, []);
   return (
 	<SafeAreaView style={[{backgroundColor: "#000000ff", flex: 1, gap: 0}]}>
 		<StatusBar backgroundColor="#000000" barStyle="light-content" />
@@ -21,7 +45,7 @@ export default function Index() {
 		</View>
 			<TouchableOpacity onPress={() => router.navigate("/profile")} style={styles.userImag}/>
 	  </View>
-		<ScrollView contentContainerStyle={{ paddingBottom: 130 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
+		<ScrollView contentContainerStyle={{ paddingBottom: 75 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
 	  <View style={{alignSelf: "flex-start", left: 20}}>
 		{name ? <Text style={styles.title4}>Olá, {name}!</Text> : null}
 	  </View>
@@ -36,9 +60,9 @@ export default function Index() {
 						pointerEvents="none"
 						maskElement={ */}
 						 <LinearGradient
-							colors={["transparent", "#131313ff"]}
+							colors={["transparent", "#000000ff"]}
 							locations={[0, 1]}
-							style={[StyleSheet.absoluteFill, {borderBottomLeftRadius: 30, borderBottomRightRadius: 30}]}
+							style={[StyleSheet.absoluteFill, {opacity: .7}]}
 						/>
 						{/* }
 					  >
@@ -61,9 +85,9 @@ export default function Index() {
 								pointerEvents="none"
 								maskElement={ */}
 								  <LinearGradient
-									colors={["transparent", "#131313ff"]}
+									colors={["transparent", "#000000ff"]}
 									locations={[0, 0.7]}
-									style={[StyleSheet.absoluteFill, {borderBottomLeftRadius: 30, borderBottomRightRadius: 30}]}
+									style={[StyleSheet.absoluteFill, {opacity: .7}]}
 								  />
 								{/* }
 							  >
@@ -75,38 +99,38 @@ export default function Index() {
             )}
             />
 		<Text style={styles.title5}>Barbeiros</Text>
-		<ScrollView
+		<FlatList
 			horizontal
+			data={datas}
+			keyExtractor={(item: any) => String(item.id)}
 			showsHorizontalScrollIndicator={false}
-			>
-			{mockBarbeiros.map((item) => (
+			renderItem ={({item}) =>
 				<Pressable key={item.id} style={styles.barCard}>
-				<Image
-					source={item.img}
-					style={{
-					width: 200,
-					height: 200,
-					borderRadius: 30,
-					}}
-				/>
-				<View style={[styles.wrapper, styles.barbInfo]} pointerEvents="box-none">
-					<LinearGradient
-					colors={["transparent", "#131313ff"]}
-					locations={[0.2, 0.9]}
-					style={[
-						StyleSheet.absoluteFill,
-						{ borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
-					]}
+					<Image
+						source={require("../../../assets/images/Screenshot from 2026-09-25 13-54-10.png")}
+						style={{
+						width: 200,
+						height: 200,
+						borderRadius: 30,
+						}}
 					/>
-					<Text style={styles.barbname}>{item.name}</Text>
-					<Text style={styles.startTime}>
-					{item.start_time} - {item.end_time}
-					</Text>
-				</View>
+					<View style={[styles.wrapper, styles.barbInfo]} pointerEvents="box-none">
+						<LinearGradient
+						colors={["transparent", "#000000ff"]}
+						locations={[0, 1]}
+						style={[
+							StyleSheet.absoluteFill, {opacity: .8},
+						]}
+						/>
+						<Text style={styles.barbname}>{item.nome}</Text>
+						<Text style={styles.startTime}>
+						{item.h_entrada} - {item.h_saida}
+						</Text>
+					</View>
 				</Pressable>
-			))}
-			</ScrollView>
-			{/* <Button title="Sair" onPress={signOut} /> */}
+			}
+			/>
+		{/* <Button title="Sair" onPress={signOut} /> */}
 		</ScrollView>
 	</SafeAreaView>
   )
