@@ -3,7 +3,7 @@ import { useAuth } from "@/hooks/useAuth";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { router } from "expo-router";
-import { Pressable, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View, Image, Button } from "react-native";
+import { Pressable, ScrollView, StatusBar, StyleSheet, Text, TouchableOpacity, View, Image, Button, Dimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
 import { mockBarbeiros, mockServicos } from "./mockData";
@@ -75,38 +75,38 @@ export default function Index() {
             )}
             />
 		<Text style={styles.title5}>Barbeiros</Text>
-		<BlurCarousel
-            data={mockBarbeiros}
-			spacing={0}
-			itemWidth={200}
-            renderItem={({ item }) => (
-                <Pressable style={[styles.barCard]}>
-					<Image source={item.img} style={{width: 200,
-						height: 200,
-						position: "absolute",
-						alignSelf: "center",
-						borderRadius: 30
-					}}/>
-					<View style={[styles.wrapper, styles.barbInfo]} pointerEvents="box-none">
-						{/* <MaskedView
-								style={[StyleSheet.absoluteFill]}
-								pointerEvents="none"
-								maskElement={ */}		
-								  <LinearGradient
-									colors={["transparent", "#131313ff"]}
-									locations={[0.2, 0.9]}
-									style={[StyleSheet.absoluteFill, {borderBottomLeftRadius: 30, borderBottomRightRadius: 30}]}
-								  />
-								{/* }
-							  >
-							  </MaskedView> */}
-							<Text style={styles.barbname}>{item.name}</Text>
-							<Text style={styles.startTime}>{item.start_time} - {item.end_time}</Text>
-					</View>
-                </Pressable>
-            )}
-            />
-		  {/* <Button title="Sair" onPress={signOut} /> */}
+		<ScrollView
+			horizontal
+			showsHorizontalScrollIndicator={false}
+			>
+			{mockBarbeiros.map((item) => (
+				<Pressable key={item.id} style={styles.barCard}>
+				<Image
+					source={item.img}
+					style={{
+					width: 200,
+					height: 200,
+					borderRadius: 30,
+					}}
+				/>
+				<View style={[styles.wrapper, styles.barbInfo]} pointerEvents="box-none">
+					<LinearGradient
+					colors={["transparent", "#131313ff"]}
+					locations={[0.2, 0.9]}
+					style={[
+						StyleSheet.absoluteFill,
+						{ borderBottomLeftRadius: 30, borderBottomRightRadius: 30 },
+					]}
+					/>
+					<Text style={styles.barbname}>{item.name}</Text>
+					<Text style={styles.startTime}>
+					{item.start_time} - {item.end_time}
+					</Text>
+				</View>
+				</Pressable>
+			))}
+			</ScrollView>
+			{/* <Button title="Sair" onPress={signOut} /> */}
 		</ScrollView>
 	</SafeAreaView>
   )

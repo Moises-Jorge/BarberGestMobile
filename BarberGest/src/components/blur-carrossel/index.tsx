@@ -1,17 +1,14 @@
-import { Dimensions, Platform, StyleSheet, ViewStyle } from "react-native";
+import { Dimensions, StyleSheet, ViewStyle } from "react-native";
 import React from "react";
 import { BlurCarouselItemProps, BlurCarouselProps } from "./types";
-import { BlurView, type BlurViewProps } from "expo-blur";
 import Animated, {
   interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
   Extrapolation,
-  useAnimatedProps,
 } from "react-native-reanimated";
 
-const AnimatedBlurView = Animated.createAnimatedComponent(BlurView);
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 const ITEM_WIDTH = SCREEN_WIDTH * 0.75;
@@ -57,42 +54,6 @@ const CarouselItem = <ItemT,>({
     };
   });
 
-  const animatedBlurProps = useAnimatedProps(() => {
-    const inputRange = [
-      (index - 1) * itemWidth,
-      index * itemWidth,
-      (index + 1) * itemWidth,
-    ];
-
-    const blurIntensity = interpolate(
-      scrollX.value,
-      inputRange,
-      [0, 0, 0],
-      Extrapolation.CLAMP,
-    );
-
-    return {
-      intensity: blurIntensity,
-    };
-  });
-  const animateAndroidStylez = useAnimatedStyle(() => {
-    return {
-      filter: [
-        {
-          blur: interpolate(
-            scrollX.value,
-            [
-              (index - 1) * itemWidth,
-              index * itemWidth,
-              (index + 1) * itemWidth,
-            ],
-            [25, 0, 25],
-            Extrapolation.CLAMP,
-          ),
-        },
-      ],
-    };
-  });
   return (
     <Animated.View
       style={[
@@ -109,18 +70,9 @@ const CarouselItem = <ItemT,>({
           {
             width: itemWidth - spacing * 2,
           },
-          Platform.OS === "android" ? animateAndroidStylez : null,
         ]}
       >
         {renderItem({ item, index })}
-
-        {Platform.OS === "ios" ? (
-          <AnimatedBlurView
-            style={[StyleSheet.absoluteFill, styles.blurOverlay]}
-            tint="light"
-            animatedProps={animatedBlurProps}
-          />
-        ) : null}
       </Animated.View>
     </Animated.View>
   );
@@ -186,9 +138,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 12,
     elevation: 10,
-  },
-  blurOverlay: {
-    borderRadius: 20,
   },
 });
 

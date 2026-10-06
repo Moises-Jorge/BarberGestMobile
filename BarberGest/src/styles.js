@@ -92,6 +92,8 @@ export const styles = StyleSheet.create({
         padding: 20, */
         borderRadius: 30,
         height: 200,
+        marginLeft: 10,
+		marginRight: 10,
     },
     barCard2:{
         backgroundColor: "#141414ff",
@@ -198,7 +200,6 @@ export const styles = StyleSheet.create({
     {
         width: "90%",
         alignSelf: "center",
-        bottom: 0,
     },
     scheduleInfo:
     {
