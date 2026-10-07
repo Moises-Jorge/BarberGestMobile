@@ -10,21 +10,43 @@ import { mockBarbeiros, mockServicos } from "./data";
 import { saveAgendamento } from "./agendamento";
 import { useEffect, useState } from "react";
 
-const url = "http://10.12.6.9:3000/api";
+const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function Index() {
 	const { signOut, name } = useAuth();
 	const [datas, setDatas] = useState([]);
+	const [erro, setErro] = useState(false);
 	useEffect(() => {
+		async function logBarbers() {
+			try {
+			const response = await fetch(`${url}/api/barbeiros`, {
+				headers: { "ngrok-skip-browser-warning": "true" },
+			});
+			console.log("status:", response.status);
+
+			const text = await response.text();
+			console.log("resposta:", text.slice(0, 300));
+
+			if (!response.ok) { setErro(true); return };
+			const json = JSON.parse(text);
+			setDatas(Array.isArray(json) ? json : json.barbeiros);
+			} catch (error) {
+				setErro(true);
+			}
+		}
+		logBarbers();
+		}, []);
+//sem ngok
+/* useEffect(() => {
 	async function logBarbers ()
 	{
 		try
 		{
-			const response = await fetch(`${url}/barbeiros`);
+			const response = await fetch(`${url}/api/barbeiros`);
 			if (response.status === 200)
 			{
 				const responseJson = await response.json();
-				setDatas(responseJson.barbeiros)
+				setDatas(responseJson)
 				console.log(responseJson)
 			}
 		}
@@ -34,7 +56,8 @@ export default function Index() {
 		}
 	}
 		logBarbers()
-	}, []);
+	}, []); */
+
   return (
 	<SafeAreaView style={[{backgroundColor: "#000000ff", flex: 1, gap: 0}]}>
 		<StatusBar backgroundColor="#000000" barStyle="light-content" />
@@ -99,6 +122,14 @@ export default function Index() {
             )}
             />
 		<Text style={styles.title5}>Barbeiros</Text>
+		{erro ? (
+			<View style = {{alignSelf: "center"}}>
+				<Text style={{fontWeight: "bold", fontSize: 15, color: "red"}}>
+					Erro ao Carregar lista de Barbeiros!
+				</Text>
+			</View>
+				
+		) : (
 		<FlatList
 			horizontal
 			data={datas}
@@ -129,7 +160,7 @@ export default function Index() {
 					</View>
 				</Pressable>
 			}
-			/>
+			/>)}
 		{/* <Button title="Sair" onPress={signOut} /> */}
 		</ScrollView>
 	</SafeAreaView>

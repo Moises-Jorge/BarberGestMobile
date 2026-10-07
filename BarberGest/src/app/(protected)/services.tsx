@@ -2,15 +2,45 @@ import { Ionicons } from "@expo/vector-icons";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Button, ScrollView, StatusBar, StyleSheet, Text, Image, TouchableOpacity, View, TextInput, useWindowDimensions } from "react-native";
+import { Button, ScrollView, StatusBar, StyleSheet, Text, FlatList, Image, TouchableOpacity, View, TextInput, useWindowDimensions } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
 import { SaveButton, SaveButtonLabel, SaveButtonRoot, SaveButtonSaved } from "@/shared/components/save-button";
 import { mockBarbeiros, mockServicos } from "./data";
-import { act, useState } from "react";
+import { act, useEffect, useState } from "react";
 import { saveAgendamento } from "./agendamento";
 
+const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
+
 export default function Services() {
+	const [datas, setDatas] = useState([]);
+	const [erro, setErro] = useState(false);
+	useEffect(() => {
+		async function logBarbers() {
+			try
+			{
+				const response = await fetch(`${url}/api/barbeiros`, {
+					headers: { "ngrok-skip-browser-warning": "true" },
+				});
+				//console.log("status:", response.status);
+				const text = await response.text();
+				//console.log("resposta:", text.slice(0, 300));
+				if (!response.ok)
+				{
+					setErro(true);
+					return ;
+				}
+			
+				const json = JSON.parse(text);
+				setDatas(Array.isArray(json) ? json : json.barbeiros);
+			}
+			catch (error)
+			{
+				setErro(true);
+			}
+		}
+		logBarbers();
+	}, []);
 	const { width } = useWindowDimensions();
 	const [nameDobarb, setNameDobarb] = useState("");
 	const WIDTH = width - 50;
@@ -92,20 +122,29 @@ export default function Services() {
 						marginLeft: 20,
 						marginBottom: 20,
 						}}>Escolha o seu barbeiro</Text>
-				<ScrollView 
+				{erro ? (
+					<View style = {{alignSelf: "center"}}>
+						<Text style={{fontWeight: "bold", fontSize: 15, color: "red"}}>
+							Erro ao Carregar lista de Barbeiros!
+						</Text>
+					</View>
+				) : (
+				<FlatList
+					data={datas}
 					horizontal
-					showsHorizontalScrollIndicator={false}>
-					{mockBarbeiros.map((barbeiro) => {
-						const active = selectedId === barbeiro.id;
+					keyExtractor={(item: any) => String(item.id)}
+					showsHorizontalScrollIndicator={false}
+					renderItem={({item}) =>
+						{ const active = selectedId === item.id;
 						return (
 						<TouchableOpacity onPress={() =>
-							{setSelectedId(barbeiro.id), setNameDobarb(barbeiro.name)}}
-							key={barbeiro.id} style={[styles.barCard3, {borderColor: active ? "cyan" : "#1d1d1dff", borderWidth: 2}]}>
-							<Image source={barbeiro.img} style={styles.barbImg2} />
-							<Text style={styles.barbname}>{barbeiro.name}</Text>
+							{setSelectedId(item.id), setNameDobarb(item.nome)}}
+							key={item.id} style={[styles.barCard3, {borderColor: active ? "cyan" : "#1d1d1dff", borderWidth: 2}]}>
+							<Image source={require("../../../assets/images/Screenshot from 2026-09-25 13-54-10.png")} style={styles.barbImg2} />
+							<Text style={styles.barbname}>{item.nome}</Text>
 						</TouchableOpacity>
-						)})}
-				</ScrollView>
+						)}}
+				/>)}
 			</View>
 			<Text style={{color: "white",
 				fontSize: 20,
