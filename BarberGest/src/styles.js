@@ -1,4 +1,8 @@
-import { StyleSheet } from "react-native";
+import { StyleSheet, Dimensions } from "react-native";
+import {RFValue} from "react-native-responsive-fontsize";
+
+const {width, height} = Dimensions.get("screen");
+
 
 export const styles = StyleSheet.create({
     container: {
@@ -13,32 +17,32 @@ export const styles = StyleSheet.create({
         //marginTop: 20,
     },
     title: {
-        fontSize: 30,
+        fontSize: RFValue(25),
         fontWeight: "bold",
         color: "white",
         textAlign: "center",
         marginBottom: 20,
     },
     title2: {
-        fontSize: 20,
+        fontSize: RFValue(25),
         fontWeight: "bold",
         color: "white",
         textAlign: "center",
     },
     title3: {
-        fontSize: 16,
+        fontSize: RFValue(11),
         color: "white",
         textAlign: "center",
         marginTop: 20,
     },
     title4: {
-        fontSize: 20,
+        fontSize: RFValue(15),
         fontWeight: "bold",
         color: "white",
         marginTop: 5,
     },
     title5: {
-        fontSize: 20,
+        fontSize: RFValue(15),
         fontWeight: "bold",
         color: "white",
         textAlign: "left",
@@ -91,9 +95,9 @@ export const styles = StyleSheet.create({
         borderWidth: 2,*/
         //padding: 20, 
         borderRadius: 30,
-        height: 200,
-        marginLeft: 10,
-		marginRight: 10,
+        height: height * .25,
+        width: width * .45,
+        marginHorizontal: 10,
     },
     barCard2:{
         backgroundColor: "#141414ff",
@@ -111,7 +115,7 @@ export const styles = StyleSheet.create({
         padding: 10,
         borderRadius: 40,
         gap: 10,
-        marginLeft: 10,
+        marginHorizontal: 5,
         height: 70,
         /* width: 180, */
         flexDirection: "row",
@@ -120,13 +124,13 @@ export const styles = StyleSheet.create({
         //marginRight: 10,
     },
     barbname: {
-        fontSize: 14,
+        fontSize: RFValue(15),
         fontWeight: "bold",
         color: "white",
         marginTop: 10,
     },
     startTime: {
-        fontSize: 14,
+        fontSize: RFValue(12),
         color: "white",
         marginTop: 5,
     },
@@ -205,7 +209,14 @@ export const styles = StyleSheet.create({
     {
 
     },
-    
+    serviceImgCard:
+    {
+        backgroundColor: "#141414ff",
+        width: "30%",
+        height: "120%",
+        alignSelf: "center",
+        borderRadius: 20,
+    }
     /* barbImageCard:
     {
         backgroundColor: "#141414ff",

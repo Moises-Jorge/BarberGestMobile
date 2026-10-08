@@ -25,7 +25,7 @@ const COLORS = {
   label: "#39382F",
   savedLabel: "#4A4A46",
   spinnerTrack: "rgba(255,255,255,0.25)",
-  spinnerHead: "#EDEDED",
+  spinnerHead: "cyan",
   successBadge: "#D8D8D6",
   successCheck: "#2C2B29",
   doneCheckBg: "#000000ff",

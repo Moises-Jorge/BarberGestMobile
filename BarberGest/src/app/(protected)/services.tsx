@@ -2,19 +2,21 @@ import { Ionicons } from "@expo/vector-icons";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Button, ScrollView, StatusBar, StyleSheet, Text, FlatList, Image, TouchableOpacity, View, TextInput, useWindowDimensions } from "react-native";
+import { Button, ScrollView, StatusBar, StyleSheet, Text, FlatList, Image, TouchableOpacity, View, TextInput, useWindowDimensions, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
 import { SaveButton, SaveButtonLabel, SaveButtonRoot, SaveButtonSaved } from "@/shared/components/save-button";
 import { mockBarbeiros, mockServicos } from "./data";
 import { act, useEffect, useState } from "react";
 import { saveAgendamento } from "./agendamento";
+import { RFValue } from "react-native-responsive-fontsize";
 
 const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function Services() {
 	const [datas, setDatas] = useState([]);
 	const [erro, setErro] = useState(false);
+	const [loading, setLoading] = useState(true);
 	useEffect(() => {
 		async function logBarbers() {
 			try
@@ -37,6 +39,8 @@ export default function Services() {
 			catch (error)
 			{
 				setErro(true);
+			} finally{
+				setLoading(false);
 			}
 		}
 		logBarbers();
@@ -76,10 +80,10 @@ export default function Services() {
 						size={20}
 					/>
 			</TouchableOpacity>
-			<Text style={{color: "white", fontSize: 30, fontWeight: "bold"}}>Detalhes</Text>
+			<Text style={{color: "white", fontSize: RFValue(25), alignSelf: "center", fontWeight: "bold"}}>Detalhes</Text>
 		</View>
 	  </View>
-		<ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
+		<ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
 	  		{name &&
 				<View style={[styles.barbImageCard]}>
 					<Image
@@ -104,27 +108,36 @@ export default function Services() {
 			<View style={styles.scheduleInfo}>
 				<View>
 					<Text style={{color: "white",
-						fontSize: 20,
+						fontSize: RFValue(20),
 						fontWeight: "bold",
 						marginTop: 20,
 						marginLeft: 20,
 						}}>Descrição</Text>
 						<Text style={{color: "white",
-								fontSize: 14,
+								fontSize: RFValue(15),
 								padding: 20}}>
 							Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum officia illum laborum aperiam eum deleniti fuga rerum aut explicabo, sint perferendis! Sequi dolor omnis libero laborum labore quasi nam eveniet.
 						</Text>
 				</View>
 					<Text style={{color: "white",
-						fontSize: 20,
+						fontSize: RFValue(20),
 						fontWeight: "bold",
 						marginTop: 20,
 						marginLeft: 20,
 						marginBottom: 20,
 						}}>Escolha o seu barbeiro</Text>
+				{loading && (
+					<ActivityIndicator color="cyan" size={30}
+						style={{ flex: 1,
+							justifyContent: "center",
+							alignItems: "center",
+							marginTop: 20,
+						}}
+					/>
+				) }
 				{erro ? (
 					<View style = {{alignSelf: "center"}}>
-						<Text style={{fontWeight: "bold", fontSize: 15, color: "red"}}>
+						<Text style={{fontWeight: "bold", fontSize: RFValue(15), color: "red", marginTop: 10}}>
 							Erro ao Carregar lista de Barbeiros!
 						</Text>
 					</View>
@@ -134,6 +147,7 @@ export default function Services() {
 					horizontal
 					keyExtractor={(item: any) => String(item.id)}
 					showsHorizontalScrollIndicator={false}
+					style={{paddingHorizontal: 10}}
 					renderItem={({item}) =>
 						{ const active = selectedId === item.id;
 						return (
@@ -147,7 +161,7 @@ export default function Services() {
 				/>)}
 			</View>
 			<Text style={{color: "white",
-				fontSize: 20,
+				fontSize: RFValue(20),
 				fontWeight: "bold",
 				marginTop: 20,
 				marginLeft: 20,
@@ -168,7 +182,7 @@ export default function Services() {
 					style={{alignSelf: "center", marginTop: 30, width: WIDTH}}
 					onSave={() => wait(1000)}
 					//resetAfter={2000}
-					onSaved={() => saveAgendamento({barbeiroId: nameDobarb})}
+					onSaved={() => saveAgendamento({barbeiroName: nameDobarb, servico: name, preco: price, duracao: time})}
 					>
 					<SaveButton.Label
 					>
