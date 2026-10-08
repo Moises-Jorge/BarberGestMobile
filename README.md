@@ -124,16 +124,12 @@ npm run dev
   </thead>
   <tbody>
     <tr>
-      <td>Hazael</td>
+     <td><em>Lubanzadio KIngui</em></td>
       <td>Desenvolvimento mobile</td>
     </tr>
     <tr>
-      <td><em>nome</em></td>
+      <td><em>Cesênio Filipe</em></td>
       <td>Backend</td>
-    </tr>
-    <tr>
-      <td><em>nome</em></td>
-      <td>Backend / Banco de dados</td>
     </tr>
   </tbody>
 </table>
