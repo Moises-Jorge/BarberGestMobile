@@ -6,6 +6,7 @@ export type Perfil = 'Admin' | 'Barbeiro' | 'Cliente';
 export interface Barbeiro {
   id: string;
   name: string;
+  password: string;
   img: ImageSourcePropType; // URL da imagem do barbeiro
   start_time: string; // HH:mm
   end_time: string; // HH:mm
@@ -20,7 +21,7 @@ export interface CreateBarbeiroDTO {
 
 export interface UpdateBarbeiroDTO {
   name?: string;
-  password?: string;
+  password: string;
   start_time?: string;
   end_time?: string;
 }
@@ -50,6 +51,8 @@ export interface Cliente {
   id: string;
   name: string;
   phone_number: string;
+  password: string;
+  email: string;
 }
 
 export interface CreateClienteDTO {
@@ -84,3 +87,9 @@ export class ApiRequestError extends Error {
     this.code = code;
   }
 }
+
+export type CreateBarbeiro = Omit<Barbeiro, 'id'>;
+export type UpdateBarbeiro = Partial<CreateBarbeiro>;
+export type BarbeiroResponse = Omit<Barbeiro, 'password'>;
+
+export type ClienteResponse = Omit<Cliente, 'password'>;

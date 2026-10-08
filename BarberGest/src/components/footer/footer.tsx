@@ -32,7 +32,7 @@ export default function Footer() {
         maskElement={ */}
           <LinearGradient
             colors={["transparent", "black"]}
-            locations={[0, 0.7]}
+            locations={[0, 1]}
             style={StyleSheet.absoluteFill}
           />
         {/* }
@@ -46,7 +46,7 @@ export default function Footer() {
           router.navigate(path as Href);
         }}
         radius={99}
-        style={styles.bar}
+        style={[styles.bar, {bottom: height - 130}]}
         palette={{ pill: "cyan", active: "#000000", inactive: "#f7f7f7ff" }}
       >
         <MaskedTabBar.List>

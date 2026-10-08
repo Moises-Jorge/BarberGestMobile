@@ -2,15 +2,49 @@ import { Ionicons } from "@expo/vector-icons";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { Button, ScrollView, StatusBar, StyleSheet, Text, Image, TouchableOpacity, View, TextInput, useWindowDimensions } from "react-native";
+import { Button, ScrollView, StatusBar, StyleSheet, Text, FlatList, Image, TouchableOpacity, View, TextInput, useWindowDimensions, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
 import { SaveButton, SaveButtonLabel, SaveButtonRoot, SaveButtonSaved } from "@/shared/components/save-button";
-import { mockBarbeiros, mockServicos } from "./mockData";
-import { act, useState } from "react";
+import { mockBarbeiros, mockServicos } from "./data";
+import { act, useEffect, useState } from "react";
 import { saveAgendamento } from "./agendamento";
+import { RFValue } from "react-native-responsive-fontsize";
+
+const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function Services() {
+	const [datas, setDatas] = useState([]);
+	const [erro, setErro] = useState(false);
+	const [loading, setLoading] = useState(true);
+	useEffect(() => {
+		async function logBarbers() {
+			try
+			{
+				const response = await fetch(`${url}/api/barbeiros`, {
+					headers: { "ngrok-skip-browser-warning": "true" },
+				});
+				//console.log("status:", response.status);
+				const text = await response.text();
+				//console.log("resposta:", text.slice(0, 300));
+				if (!response.ok)
+				{
+					setErro(true);
+					return ;
+				}
+			
+				const json = JSON.parse(text);
+				setDatas(Array.isArray(json) ? json : json.barbeiros);
+			}
+			catch (error)
+			{
+				setErro(true);
+			} finally{
+				setLoading(false);
+			}
+		}
+		logBarbers();
+	}, []);
 	const { width } = useWindowDimensions();
 	const [nameDobarb, setNameDobarb] = useState("");
 	const WIDTH = width - 50;
@@ -46,10 +80,10 @@ export default function Services() {
 						size={20}
 					/>
 			</TouchableOpacity>
-			<Text style={{color: "white", fontSize: 30, fontWeight: "bold"}}>Detalhes</Text>
+			<Text style={{color: "white", fontSize: RFValue(25), alignSelf: "center", fontWeight: "bold"}}>Detalhes</Text>
 		</View>
 	  </View>
-		<ScrollView contentContainerStyle={{ paddingBottom: 40 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
+		<ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
 	  		{name &&
 				<View style={[styles.barbImageCard]}>
 					<Image
@@ -62,9 +96,9 @@ export default function Services() {
 								pointerEvents="none"
 								maskElement={ */}
 								  <LinearGradient
-									colors={["transparent", "#131313ff"]}
+									colors={["transparent", "#000000ff"]}
 									locations={[0, 1]}
-									style={[StyleSheet.absoluteFill, {borderBottomLeftRadius: 30, borderBottomRightRadius: 30}]}
+									style={[StyleSheet.absoluteFill, {opacity: .7}]}
 								  />
 						<Text style={styles.barbname}>{name}</Text>
 						<Text style={styles.startTime}>{price}Kz | {time}min</Text>
@@ -74,41 +108,60 @@ export default function Services() {
 			<View style={styles.scheduleInfo}>
 				<View>
 					<Text style={{color: "white",
-						fontSize: 20,
+						fontSize: RFValue(20),
 						fontWeight: "bold",
 						marginTop: 20,
 						marginLeft: 20,
 						}}>Descrição</Text>
 						<Text style={{color: "white",
-								fontSize: 14,
+								fontSize: RFValue(15),
 								padding: 20}}>
 							Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum officia illum laborum aperiam eum deleniti fuga rerum aut explicabo, sint perferendis! Sequi dolor omnis libero laborum labore quasi nam eveniet.
 						</Text>
 				</View>
 					<Text style={{color: "white",
-						fontSize: 20,
+						fontSize: RFValue(20),
 						fontWeight: "bold",
 						marginTop: 20,
 						marginLeft: 20,
 						marginBottom: 20,
 						}}>Escolha o seu barbeiro</Text>
-				<ScrollView 
+				{loading && (
+					<ActivityIndicator color="cyan" size={30}
+						style={{ flex: 1,
+							justifyContent: "center",
+							alignItems: "center",
+							marginTop: 20,
+						}}
+					/>
+				) }
+				{erro ? (
+					<View style = {{alignSelf: "center"}}>
+						<Text style={{fontWeight: "bold", fontSize: RFValue(15), color: "red", marginTop: 10}}>
+							Erro ao Carregar lista de Barbeiros!
+						</Text>
+					</View>
+				) : (
+				<FlatList
+					data={datas}
 					horizontal
-					showsHorizontalScrollIndicator={false}>
-					{mockBarbeiros.map((barbeiro) => {
-						const active = selectedId === barbeiro.id;
+					keyExtractor={(item: any) => String(item.id)}
+					showsHorizontalScrollIndicator={false}
+					style={{paddingHorizontal: 10}}
+					renderItem={({item}) =>
+						{ const active = selectedId === item.id;
 						return (
 						<TouchableOpacity onPress={() =>
-							{setSelectedId(barbeiro.id), setNameDobarb(barbeiro.name)}}
-							key={barbeiro.id} style={[styles.barCard3, {borderColor: active ? "cyan" : "#1d1d1dff", borderWidth: 2}]}>
-							<Image source={barbeiro.img} style={styles.barbImg2} />
-							<Text style={styles.barbname}>{barbeiro.name}</Text>
+							{setSelectedId(item.id), setNameDobarb(item.nome)}}
+							key={item.id} style={[styles.barCard3, {borderColor: active ? "cyan" : "#1d1d1dff", borderWidth: 2}]}>
+							<Image source={require("../../../assets/images/Screenshot from 2026-09-25 13-54-10.png")} style={styles.barbImg2} />
+							<Text style={styles.barbname}>{item.nome}</Text>
 						</TouchableOpacity>
-						)})}
-				</ScrollView>
+						)}}
+				/>)}
 			</View>
 			<Text style={{color: "white",
-				fontSize: 20,
+				fontSize: RFValue(20),
 				fontWeight: "bold",
 				marginTop: 20,
 				marginLeft: 20,
@@ -129,7 +182,7 @@ export default function Services() {
 					style={{alignSelf: "center", marginTop: 30, width: WIDTH}}
 					onSave={() => wait(1000)}
 					//resetAfter={2000}
-					onSaved={() => saveAgendamento({barbeiroId: nameDobarb})}
+					onSaved={() => saveAgendamento({barbeiroName: nameDobarb, servico: name, preco: price, duracao: time})}
 					>
 					<SaveButton.Label
 					>

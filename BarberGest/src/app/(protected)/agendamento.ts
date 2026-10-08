@@ -4,10 +4,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const KEY = "agendamento";
 
 export type Agendamento = {
-  corteId?: string;
-  barbeiroId?: string;
+  servico?:  string | string[];
+  barbeiroName?: string;
   hora?: string;
-  min?: string;
+  preco?: string | string[];
+  duracao?: string | string[];
 };
 
 export async function getAgendamento(): Promise<Agendamento> {

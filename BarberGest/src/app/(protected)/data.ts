@@ -11,10 +11,10 @@ export const barbeiroImages: Record<string, any> = {
 };
 
 export let mockBarbeiros: Barbeiro[] = [
-  { id: '1', name: 'João Silva', start_time: '09:00', end_time: '18:00', img: require('../../../assets/images/Screenshot from 2026-09-25 13-54-10.png') },
-  { id: '2', name: 'Carlos Souza', start_time: '10:00', end_time: '19:00', img: require('../../../assets/images/Screenshot from 2026-09-25 13-54-10.png') },
-  { id: '3', name: 'Mario Oliveira', start_time: '08:00', end_time: '17:00', img: require('../../../assets/images/Screenshot from 2026-09-25 13-54-10.png') },
-  { id: '4', name: 'Analto Santos', start_time: '09:00', end_time: '18:00', img: require('../../../assets/images/Screenshot from 2026-09-25 13-54-10.png') },
+  { id: '1', name: 'João Silva', start_time: '09:00', password: "something", end_time: '18:00', img: require('../../../assets/images/Screenshot from 2026-09-25 13-54-10.png') },
+  { id: '2', name: 'Carlos Souza', start_time: '10:00', password: "something", end_time: '19:00', img: require('../../../assets/images/Screenshot from 2026-09-25 13-54-10.png') },
+  { id: '3', name: 'Mario Oliveira', start_time: '08:00', password: "something", end_time: '17:00', img: require('../../../assets/images/Screenshot from 2026-09-25 13-54-10.png') },
+  { id: '4', name: 'Analto Santos', start_time: '09:00', password: "something", end_time: '18:00', img: require('../../../assets/images/Screenshot from 2026-09-25 13-54-10.png') },
 ];
 
 export let mockServicos: Servico[] = [
@@ -26,7 +26,7 @@ export let mockServicos: Servico[] = [
 ];
 
 export let mockClientes: Cliente[] = [
-  { id: '1', name: 'Pedro Lima', phone_number: '11999990000' },
+  { id: '1', name: 'Pedro Lima', phone_number: '11999990000', password: "something", email: "something@gmail.com" },
 ];
 
 // Simula quem está "logado" — troque conforme a tela/perfil que estiver testando

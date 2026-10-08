@@ -6,7 +6,8 @@ import { LinearGradient } from "expo-linear-gradient";
 import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
-import { mockBarbeiros, mockServicos } from "./mockData";
+import { mockBarbeiros, mockServicos } from "./data";
+import { RFValue } from "react-native-responsive-fontsize";
 
 export default function Settings() {
   const { signOut, name } = useAuth();
@@ -15,7 +16,7 @@ export default function Settings() {
         <StatusBar backgroundColor="#000000" barStyle="light-content" />
         <View style = {{flexDirection: "row", justifyContent: "space-between", paddingBottom: 8}}>
         <View style={{flexDirection: "row", alignSelf: "flex-start", left: 20, marginTop: 20}}>
-            <Text style={{color: "white", fontSize: 30, fontWeight: "bold"}}>Definições</Text>
+            <Text style={{color: "white", fontSize: RFValue(25), fontWeight: "bold"}}>Definições</Text>
         </View>
       </View>
         <ScrollView contentContainerStyle={{ paddingBottom: 130 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
