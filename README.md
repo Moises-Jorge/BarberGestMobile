@@ -124,7 +124,7 @@ npm run dev
   </thead>
   <tbody>
     <tr>
-      <td>Lubanzadio Kingui</td>
+     <td><em>Lubanzadio KIngui</em></td>
       <td>Desenvolvimento mobile</td>
     </tr>
     <tr>
