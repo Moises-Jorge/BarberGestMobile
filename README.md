@@ -124,11 +124,11 @@ npm run dev
   </thead>
   <tbody>
     <tr>
-     <td><em>Lubanzadio KIngui</em></td>
+      <td><em>Lubanzadio Kingui</em></td>
       <td>Desenvolvimento mobile</td>
     </tr>
     <tr>
-      <td><em>Cesênio Filipe</em></td>
+      <td><em>Cesênio Filpe</em></td>
       <td>Backend</td>
     </tr>
   </tbody>

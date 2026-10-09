@@ -212,8 +212,8 @@ export const styles = StyleSheet.create({
     serviceImgCard:
     {
         backgroundColor: "#141414ff",
-        width: "30%",
-        height: "120%",
+        width: "90%",
+        height: height * 0.20,
         alignSelf: "center",
         borderRadius: 20,
     }

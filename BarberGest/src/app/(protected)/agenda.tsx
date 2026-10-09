@@ -11,6 +11,7 @@ import { getAgendamento, limparAgendamento, Agendamento } from "./agendamento";
 import { useCallback, useState } from "react";
 import { useFocusEffect } from "expo-router";
 import { RFValue } from "react-native-responsive-fontsize";
+import { Ionicons } from "@expo/vector-icons";
 
 export default function Agenda() {
   const { signOut, name } = useAuth();
@@ -32,26 +33,26 @@ export default function Agenda() {
 		    </View>
       </View>
         <ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
-          <View style = {{flexDirection: "row",
-            justifyContent: "space-between",
-            alignSelf: "center",
-            borderRadius: 30,
-            backgroundColor: "#1b1b1bff",
-            padding: 20,
-            maxWidth : "100%",
-            width: "95%",
-            height: "100%",
-          }}>
             <View style={styles.serviceImgCard}>
-
+              <View style={[styles.wrapper, styles.barbInfo]} pointerEvents="box-none">
+                <LinearGradient
+                  colors={["transparent", "#000000ff"]}
+                  locations={[0, 1]}
+                  style={[
+                    StyleSheet.absoluteFill, {opacity: .8},
+                  ]}
+                />
+                  <Text style={{color: "white", fontSize: RFValue(16)}}>{dados.servico} com {dados.barbeiroName}</Text>
+                  <View style={{flexDirection: "row", gap: 5}}>
+                    <Ionicons name="time-outline" size={RFValue(16)} color= "white" />
+                    <Text style={{color: "white", fontSize: RFValue(14)}}>10h |</Text>
+                    <Ionicons name="speedometer-outline" size={RFValue(16)} color= "white" />
+                    <Text style={{color: "white", fontSize: RFValue(14)}}>~{dados.duracao}min |</Text>
+                    <Ionicons name="cash-outline" size={RFValue(16)} color= "white" />
+                    <Text style={{color: "white", fontSize: RFValue(14)}}>{dados.preco}Kz</Text>
+                  </View>
+              </View>
             </View>
-            <View style={{alignSelf: "center", gap: 5}}>
-              <Text style={{color: "white"}}>Barbeiro escolhido: {dados.barbeiroName}</Text>
-              <Text style={{color: "white"}}>Servico: {dados.servico}</Text>
-              <Text style={{color: "white"}}>Tempo estimado: {dados.duracao} min</Text>
-              <Text style={{color: "white"}}>Preco : {dados.preco} Kz</Text>
-            </View>
-          </View>
         </ScrollView>
     </SafeAreaView>
   )
