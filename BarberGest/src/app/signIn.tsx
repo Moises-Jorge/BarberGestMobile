@@ -1,12 +1,13 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, Pressable, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UnStableCurvedLoopMarquee } from "../components/organisms/curved-marquee";
 import { styles } from "../styles";
 import { RFValue } from "react-native-responsive-fontsize";
 
+const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function SignIn() {
   const { signIn } = useAuth();
@@ -16,6 +17,8 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const routes = useRouter();
   const [errors, setErrors] = useState<{ name?: string; phone?: string; password?: string }>({});
+  const [loading, setLoading] = useState(false);
+  const [mensagem, setMensagem] = useState('');
 
   const validate = () => {
   const newErrors: { name?: string; phone?: string; password?: string } = {};
@@ -47,13 +50,48 @@ export default function SignIn() {
       setErrors(newErrors);
       return Object.keys(newErrors).length === 0;
   };
-  const handleSignIn = () => {
-      if (!validate()) {
-          setOk(false);
+
+  const enviar = async () => {
+    setLoading(true);
+    setMensagem('');
+    try {
+      const response = await fetch(`${url}/api/clientes`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        body: JSON.stringify({ nome: name.trim(), telefone: phone, senha: password }),
+      });
+      const text = await response.text();
+      console.log(response.status, text);
+      let data = null;
+      if (response.status !== 204) {
+        data = await response.json().catch(() => null);
+      }
+
+      if (!response.ok) {
+        throw new Error(data?.message || `Erro ${response.status}`);
+      }
+      return true;
+    } catch (error) {
+      setMensagem(error instanceof Error ? error.message : 'Erro inesperado');
+      return false;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignIn = async () => {
+    if (!validate()) {
+      setOk(false);
       return;
-  }
-      setOk(true);
+    }
+    setOk(true);
+    const sucesso = await enviar();
+    if (sucesso) {
       signIn(name.trim());
+    }
   };
 
   return (
@@ -88,8 +126,8 @@ export default function SignIn() {
                     }
               }} onChange={() => setOk(true)} placeholderTextColor="white" secureTextEntry/>
               {errors.password && <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{errors.password}</Text>}
-              <TouchableOpacity style={styles.entrarButton} onPress={handleSignIn}>
-                <Text>Cria conta</Text>
+              <TouchableOpacity style={styles.entrarButton} onPress={handleSignIn} disabled={loading}>
+                <Text>{ loading ? "Criando..." : "Cria conta"}</Text>
               </TouchableOpacity>
             </View>
 			  <Text style={styles.title3}>Já tens uma conta? <Text onPress={() => routes.navigate("/logIn")} style={styles.link}>Faça login</Text></Text>
