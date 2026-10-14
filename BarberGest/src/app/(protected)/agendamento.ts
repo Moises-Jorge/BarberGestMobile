@@ -12,7 +12,8 @@ export type Agendamento = {
 };
 
 export async function getAgendamento(): Promise<Agendamento> {
-  try {
+  try
+  {
     const raw = await AsyncStorage.getItem(KEY);
     return raw ? JSON.parse(raw) : {};
   } catch {

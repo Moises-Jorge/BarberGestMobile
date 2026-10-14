@@ -9,7 +9,7 @@ export default function ProtectedLayout() {
 	const HIDE_FOOTER_ON = ["/services"];
 
 	const pathname = usePathname();
-	//const showFooter = !HIDE_FOOTER_ON.includes(pathname);
+	const showFooter = !HIDE_FOOTER_ON.includes(pathname);
 
 	if (isLoading)
 	{
@@ -30,7 +30,7 @@ export default function ProtectedLayout() {
 			<Stack.Screen name="profile" />
 			<Stack.Screen name="settings" />
 		</Stack>
-		<Footer />
+		{ showFooter && <Footer />}
 		</View>
 	);
 	}
