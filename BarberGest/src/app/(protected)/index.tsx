@@ -105,7 +105,7 @@ export default function Index() {
 	return (
 		<SafeAreaView style={[{backgroundColor: "#000000ff", flex: 1, gap: 0}]}>
 			<StatusBar backgroundColor="#000000" barStyle="light-content" />
-			<View style = {{flexDirection: "row", justifyContent: "space-between", paddingBottom: 2}}>
+			<View style = {{flexDirection: "row", justifyContent: "space-between", paddingBottom: 8}}>
 			<View style={{flexDirection: "row", alignSelf: "flex-start", left: 20, marginTop: 20}}>
 				<Text style={{color: "white", fontSize: RFValue(25), fontWeight: "bold"}}>Barber</Text>
 				<Text style={{color: "cyan", fontSize: RFValue(25), fontWeight: "bold"}}>Gest</Text>
@@ -114,7 +114,7 @@ export default function Index() {
 		</View>
 			<ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
 		<View style={{alignSelf: "flex-start", left: 20}}>
-			{name ? <Text style={styles.title4}>Olá, {name}!</Text> : null}
+			{name ? <Text style={styles.title4}>Olá, {name.split(" ")[0]}!</Text> : null}
 		</View>
 			<View style={[styles.barbImageCard]}>
 				<Image
@@ -161,7 +161,7 @@ export default function Index() {
 				renderItem={({ item }) => (
 					<Pressable onPress={() => {router.navigate({
 						pathname: "/services",
-						params : {name: item.nome, price: item.preco, time: item.duracao}});
+						params : {name: item.nome, price: item.preco, time: item.duracao, descricao: item.descricao}});
 						saveAgendamento({ servico: item.nome});}} style={[styles.barCard2]}>
 						<View style={[styles.wrapper, styles.barbInfo]} pointerEvents="box-none">
 							{/* <MaskedView
@@ -238,7 +238,6 @@ export default function Index() {
 					</Pressable>
 				}
 				/>)}
-			{/* <Button title="Sair" onPress={signOut} /> */}
 			</ScrollView>
 		</SafeAreaView>
 	)
