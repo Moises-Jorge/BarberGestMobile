@@ -74,24 +74,24 @@ export default function SignIn() {
         }
 
         return data; // normalmente traz o utilizador e/ou um token
-    } catch (error) {
-        setMensagem(error instanceof Error ? error.message : 'Erro inesperado');
-        return null;
-    } finally {
-        setLoading(false);
-    }
-    };
+        } catch (error) {
+            setMensagem(error instanceof Error ? error.message : 'Erro inesperado');
+            return null;
+        } finally {
+            setLoading(false);
+        }
+        };
 
-    const handleLogin = async () => {
-    if (!name.trim() || !password) {
-        setMensagem('Preenche o nome e a senha');
-        return;
-    }
-    const data = await entrar();
-    if (data) {
-        signIn(name.trim());
-    }
-    };
+        const handleLogin = async () => {
+        if (!name.trim() || !password) {
+            setMensagem('Preenche o nome e a senha');
+            return;
+        }
+        const data = await entrar();
+        if (data) {
+            signIn(name.trim());
+        }
+        };
     return (
       <SafeAreaView style={styles.container}>
          <ScrollView contentContainerStyle={{ paddingBottom: 50 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>

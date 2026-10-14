@@ -55,9 +55,25 @@ export default function Services() {
 	const [focused, setFocused] = useState<"hora" | "min" | null>(null);;
 	const [selectedId, setSelectedId] = useState<string | null>(null);
 	const {name, price, time, descricao} = useLocalSearchParams()
+	const [mensagem, setMensagem] = useState('');
 	function wait(arg0: number): void | Promise<void> {
 		throw new Error("Function not implemented.");
 	}
+
+	const handleSave = () => {
+		if (!selectedId) {
+			setMensagem("Por favor, selecione um barbeiro.");
+			return false;
+		}
+		return true;
+	}
+
+	const handleSignIn = async () => {
+		const sucesso = handleSave();
+		if (sucesso) {
+			saveAgendamento({barbeiroName: nameDobarb, servico: name, preco: price, duracao: time,});
+	}
+  };
 
   return (
 	<SafeAreaView style={[{backgroundColor: "#000000ff", flex: 1, gap: 0}]}>
@@ -157,7 +173,7 @@ export default function Services() {
 						{ const active = selectedId === item.id;
 						return (
 						<TouchableOpacity onPress={() =>
-							{setSelectedId(item.id), setNameDobarb(item.nome)}}
+							{setSelectedId(item.id), setNameDobarb(item.nome), setMensagem("")}}
 							key={item.id} style={[styles.barCard3, {borderColor: active ? "cyan" : "#1d1d1dff", borderWidth: 2}]}>
 							<Image source={require("../../../assets/images/Screenshot from 2026-09-25 13-54-10.png")} style={styles.barbImg2} />
 							<Text style={styles.barbname}>{item.nome}</Text>
@@ -184,10 +200,11 @@ export default function Services() {
 			</View>
 			<View>
 				<SaveButton.Root
-					style={{alignSelf: "center", marginTop: 30, width: WIDTH}}
+					style={{alignSelf: "center", marginTop: 30, width: WIDTH, opacity: selectedId === null ? 0.5 : 1}}
 					onSave={() => wait(1000)}
 					//resetAfter={2000}
-					onSaved={() => saveAgendamento({barbeiroName: nameDobarb, servico: name, preco: price, duracao: time})}
+					disabled={selectedId === null ? true : false}
+					onSaved={() => handleSignIn()}
 					>
 					<SaveButton.Label
 					>
