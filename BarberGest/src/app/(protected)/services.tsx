@@ -54,7 +54,7 @@ export default function Services() {
 	const [min, setMin] = useState("");
 	const [focused, setFocused] = useState<"hora" | "min" | null>(null);;
 	const [selectedId, setSelectedId] = useState<string | null>(null);
-	const {name, price, time} = useLocalSearchParams()
+	const {name, price, time, descricao} = useLocalSearchParams()
 	function wait(arg0: number): void | Promise<void> {
 		throw new Error("Function not implemented.");
 	}
@@ -66,11 +66,11 @@ export default function Services() {
 		<View style={{flexDirection: "row", alignSelf: "flex-start", left: 20, marginTop: 20, gap: 10}}>
 			<TouchableOpacity onPress={()=> route.navigate("/")}
 			style={{backgroundColor: "#141414ff",
-				width: 40,
-				height: 40,
+				width: width * 0.10,
+				height: width * 0.10,
 				borderColor: "#1d1d1dff",
         		borderWidth: 2,
-				borderRadius: 20,
+				borderRadius: (width * 0.10) / 2,
 				alignItems: "center",
 				justifyContent: "center"
 				}}>
@@ -121,7 +121,7 @@ export default function Services() {
 						<Text style={{color: "white",
 								fontSize: RFValue(15),
 								padding: 20}}>
-							Lorem ipsum dolor sit amet consectetur adipisicing elit. Ipsum officia illum laborum aperiam eum deleniti fuga rerum aut explicabo, sint perferendis! Sequi dolor omnis libero laborum labore quasi nam eveniet.
+									{descricao}
 						</Text>
 				</View>
 					<Text style={{color: "white",

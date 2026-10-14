@@ -42,8 +42,8 @@ export default function Agenda() {
                     StyleSheet.absoluteFill, {opacity: .8},
                   ]}
                 />
-                  <Text style={{color: "white", fontSize: RFValue(16)}}>{dados.servico} com {dados.barbeiroName}</Text>
-                  <View style={{flexDirection: "row", gap: 5}}>
+                  <Text style={{color: "white", fontSize: RFValue(16), fontWeight: "bold"}}>{dados.servico} com {dados.barbeiroName}</Text>
+                  <View style={{flexDirection: "row", gap: 5, top: 5}}>
                     <Ionicons name="time-outline" size={RFValue(16)} color= "white" />
                     <Text style={{color: "white", fontSize: RFValue(14)}}>10h |</Text>
                     <Ionicons name="speedometer-outline" size={RFValue(16)} color= "white" />

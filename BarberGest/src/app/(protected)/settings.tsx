@@ -3,7 +3,7 @@ import Footer from "@/components/footer/footer";
 import { useAuth } from "@/hooks/useAuth";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
-import { ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
+import { Button, ScrollView, StatusBar, StyleSheet, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
 import { mockBarbeiros, mockServicos } from "./data";
@@ -20,7 +20,6 @@ export default function Settings() {
         </View>
       </View>
         <ScrollView contentContainerStyle={{ paddingBottom: 130 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
-            
         </ScrollView>
     </SafeAreaView>
   )
