@@ -110,7 +110,11 @@ export default function Index() {
 				<Text style={{color: "white", fontSize: RFValue(25), fontWeight: "bold"}}>Barber</Text>
 				<Text style={{color: "cyan", fontSize: RFValue(25), fontWeight: "bold"}}>Gest</Text>
 			</View>
-				<TouchableOpacity onPress={() => router.navigate("/profile")} style={styles.userImag}/>
+				<TouchableOpacity onPress={() => router.navigate("/profile")} style={styles.userImag}>
+					<Text style={{ color: "cyan", fontSize: RFValue(18), fontWeight: "bold"}}>
+						{name.charAt(0).toUpperCase()}
+					</Text>
+				</TouchableOpacity>
 		</View>
 			<ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
 		<View style={{alignSelf: "flex-start", left: 20}}>

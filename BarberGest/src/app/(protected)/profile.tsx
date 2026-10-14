@@ -8,6 +8,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
 import { mockBarbeiros, mockServicos } from "./data";
 import { RFValue } from "react-native-responsive-fontsize";
+import { Ionicons } from "@expo/vector-icons";
 const {width, height} = Dimensions.get("screen");
 
 export default function Profile() {
@@ -21,22 +22,41 @@ export default function Profile() {
           <Text style={{color: "cyan", fontSize: RFValue(25), fontWeight: "bold"}}>Perfil</Text>
 		    </View>
       </View>
-        <ScrollView contentContainerStyle={{ paddingBottom: 130 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
+        <ScrollView contentContainerStyle={{ paddingBottom: 0 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
           <View style={styles.profileTopCard}>
             <View style={{flexDirection: "row"}}>
-              <View style={[styles.userImag, {width: width * 0.20,
+              <View style={[styles.userImag, {width: width * 0.20, marginTop: 0,
                 height: width * 0.20,
-                borderRadius: (width * 0.20) / 2,}]}/>
+                borderRadius: (width * 0.20) / 2}]}>
+                  <Text style={{ color: "cyan", fontSize: RFValue(40), fontWeight: "bold"}}>
+                    {name.charAt(0).toUpperCase()}
+                  </Text>
+              </View>
                 <View style={{alignSelf: "center"}}>
-                  <Text style={[styles.barbname]}>
+                  <Text style={[styles.barbname, {fontSize: RFValue(18)}]}>
                     {name}
                   </Text>
-                  <Text style={{color: "gray", fontSize: RFValue(13)}}>cliente</Text>
+                  <Text style={{color: "gray", fontSize: RFValue(15)}}>cliente</Text>
                 </View>
             </View>
           </View>
-          {/* <Button title="sair" onPress={signOut}></Button> */}
+          <View style={styles.settingOptions}>
+            <View style={styles.settingsOption}>
+                <Text style={{color: "white", fontSize: RFValue(15)}}>Telemóvel</Text>
+                <Text style={{color: "gray", fontSize: RFValue(15)}}>945 252 451</Text>
+            </View>
+            <View style={styles.settingsOption}>
+                <Text style={{color: "white", fontSize: RFValue(15)}}>Cliente de</Text>
+                <Text style={{color: "gray", fontSize: RFValue(15)}}>Nome da Barbearia</Text>
+            </View>
+          </View>
         </ScrollView>
+        <TouchableOpacity style={[styles.entrarButton, {alignSelf: "center", marginBottom: 7, width: "90%"}]} onPress={signOut}>
+          <Text>Terminar Sessão</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={[styles.entrarButton, {alignSelf: "center", marginBottom: 100, backgroundColor: "#e24646ff", width: "90%"}]}>
+          <Text>Apagar conta</Text>
+        </TouchableOpacity>
     </SafeAreaView>
   )
 }

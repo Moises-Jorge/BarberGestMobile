@@ -75,8 +75,6 @@ export const styles = StyleSheet.create({
     entrarButton: {
         marginTop: 10,
         backgroundColor: "cyan",
-        borderColor: "#0b9e9eff",
-        borderWidth: 2,
         width: 250,
         padding: 10,
         borderRadius: 50,
@@ -166,6 +164,8 @@ export const styles = StyleSheet.create({
         borderRadius: (width * 0.10) / 2,
         marginTop: 20,
         marginRight: 20,
+        alignItems: "center",
+        justifyContent: "center",
     },
     footer:
     {
@@ -220,15 +220,34 @@ export const styles = StyleSheet.create({
     profileTopCard:
     {
         width: "95%",
-        height: height * 0.15,
         paddingHorizontal: 20,
-        marginTop: 20,
+        paddingVertical: 20,
+        marginTop: 10,
         //backgroundColor: "#1d1d1dff",
         borderColor: "#1d1d1dff",
         borderWidth: 3,
         alignSelf: "center",
         borderRadius: 30,
-        justifyContent: "space-between"
+        //justifyContent: "space-between"
+    },
+    settingsOption:
+    {
+        flexDirection: "row",
+        width: "95%",
+        justifyContent: "space-between",
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        alignSelf: "center",
+        borderColor: "#1d1d1dff",
+        borderWidth: 3,
+        paddingVertical: 15,
+        top: 10,
+        borderRadius: 15,
+    },
+    settingOptions:
+    {
+        marginTop: 20,
+        gap: 10,
     }
     /* barbImageCard:
     {
