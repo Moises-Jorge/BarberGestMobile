@@ -216,6 +216,19 @@ export const styles = StyleSheet.create({
         height: height * 0.20,
         alignSelf: "center",
         borderRadius: 20,
+    },
+    profileTopCard:
+    {
+        width: "95%",
+        height: height * 0.15,
+        paddingHorizontal: 20,
+        marginTop: 20,
+        //backgroundColor: "#1d1d1dff",
+        borderColor: "#1d1d1dff",
+        borderWidth: 3,
+        alignSelf: "center",
+        borderRadius: 30,
+        justifyContent: "space-between"
     }
     /* barbImageCard:
     {
