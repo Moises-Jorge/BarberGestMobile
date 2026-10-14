@@ -7,6 +7,7 @@ import { UnStableCurvedLoopMarquee } from "../components/organisms/curved-marque
 import { styles } from "../styles";
 import { RFValue } from "react-native-responsive-fontsize";
 
+const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function SignIn() {
     const { signIn } = useAuth();
@@ -15,6 +16,8 @@ export default function SignIn() {
     const [ok, setOk] = useState(true);
     const routes = useRouter();
     const [errors, setErrors] = useState<{ name?: string; password?: string }>({});
+    const [loading, setLoading] = useState(false);
+    const [mensagem, setMensagem] = useState('');
 
     const validate = () => {
     const newErrors: { name?: string; password?: string } = {};
@@ -42,13 +45,52 @@ export default function SignIn() {
         return Object.keys(newErrors).length === 0;
     };
 
-    const handleSignIn = () => {
-        if (!validate()) {
-            setOk(false);
+    const entrar = async () => {
+    setLoading(true);
+    setMensagem('');
+    try {
+        const response = await fetch(`${url}/api/clientes/login`, { // confirma a rota no backend
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'ngrok-skip-browser-warning': 'true',
+        },
+        body: JSON.stringify({
+            nome: name.trim(),
+            senha: password,
+        }),
+        });
+        const text = await response.text();
+        console.log(response.status, text);
+
+        let data = null;
+        try {
+            data = text ? JSON.parse(text) : null;
+        } catch {
+            data = null;
+        }
+        if (!response.ok) {
+        throw new Error(data?.message || `Erro ${response.status}`);
+        }
+
+        return data; // normalmente traz o utilizador e/ou um token
+    } catch (error) {
+        setMensagem(error instanceof Error ? error.message : 'Erro inesperado');
+        return null;
+    } finally {
+        setLoading(false);
+    }
+    };
+
+    const handleLogin = async () => {
+    if (!name.trim() || !password) {
+        setMensagem('Preenche o nome e a senha');
         return;
     }
-        setOk(true);
+    const data = await entrar();
+    if (data) {
         signIn(name.trim());
+    }
     };
     return (
       <SafeAreaView style={styles.container}>
@@ -75,8 +117,8 @@ export default function SignIn() {
                     }
                   }} placeholder="Senha" onChange={() => setOk(true)} placeholderTextColor="white" secureTextEntry/>
                     {errors.password && <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{errors.password}</Text>}
-                  <TouchableOpacity style={styles.entrarButton} onPress={handleSignIn}>
-                      <Text>Entrar</Text>
+                  <TouchableOpacity style={styles.entrarButton} onPress={handleLogin} disabled={loading}>
+                      <Text>{ loading ? "Entrando..." : "Entrar"}</Text>
                   </TouchableOpacity>
               </View>
               <Text style={styles.title3}>Ainda não tens uma conta? <Text onPress={() => routes.navigate("/signIn")} style={styles.link}>Cria uma!</Text></Text>
