@@ -124,12 +124,24 @@ npm run dev
   </thead>
   <tbody>
     <tr>
-     <td><em>Lubanzadio KIngui</em></td>
+     <td><em>Lubanzadio Kingui</em></td>
       <td>Desenvolvimento mobile</td>
+    </tr>
+    <tr>
+      <td><em>Jormaedes Luis</em></td>
+      <td>Desenvolvimento Web</td>
     </tr>
     <tr>
       <td><em>Cesênio Filipe</em></td>
       <td>Backend</td>
+    </tr>
+    <tr>
+      <td><em>Moises Jorge</em></td>
+      <td>Backend</td>
+    </tr>
+    <tr>
+      <td><em>Margareth Fontes</em></td>
+      <td>UI</td>
     </tr>
   </tbody>
 </table>
@@ -139,7 +151,7 @@ npm run dev
 <ul>
   <li>✅ Telas de login e cadastro</li>
   <li>✅ Camada de API mockada</li>
-  <li>⬜ Integração com o backend real</li>
+  <li>✅ Integração com o backend real</li>
   <li>⬜ Fluxo completo de agendamento</li>
   <li>⬜ Tela de perfil do cliente</li>
   <li>⬜ Notificações de agendamento</li>
