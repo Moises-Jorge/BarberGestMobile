@@ -18,11 +18,36 @@ export let mockBarbeiros: Barbeiro[] = [
 ];
 
 export let mockServicos: Servico[] = [
-  { id: '1', name: 'Corte de cabelo', price: 35, serv_time: 30 },
-  { id: '2', name: 'Barba', price: 20, serv_time: 20 },
-  { id: '3', name: 'Corte + Barba', price: 50, serv_time: 45 },
-  { id: '4', name: 'Barba', price: 50, serv_time: 45 },
-  { id: '5', name: 'Pintura', price: 50, serv_time: 45 },
+  {
+    id: '1', name: 'Corte de cabelo', preco: 35, serv_time: 30,
+    ativo: false,
+    createdAt: undefined,
+    updatedAt: undefined
+  },
+  {
+    id: '2', name: 'Barba', preco: 20, serv_time: 20,
+    ativo: false,
+    createdAt: undefined,
+    updatedAt: undefined
+  },
+  {
+    id: '3', name: 'Corte + Barba', preco: 50, serv_time: 45,
+    ativo: false,
+    createdAt: undefined,
+    updatedAt: undefined
+  },
+  {
+    id: '4', name: 'Barba', preco: 50, serv_time: 45,
+    ativo: false,
+    createdAt: undefined,
+    updatedAt: undefined
+  },
+  {
+    id: '5', name: 'Pintura', preco: 50, serv_time: 45,
+    ativo: false,
+    createdAt: undefined,
+    updatedAt: undefined
+  },
 ];
 
 export let mockClientes: Cliente[] = [

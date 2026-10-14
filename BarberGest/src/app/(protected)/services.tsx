@@ -101,7 +101,12 @@ export default function Services() {
 									style={[StyleSheet.absoluteFill, {opacity: .7}]}
 								  />
 						<Text style={styles.barbname}>{name}</Text>
-						<Text style={styles.startTime}>{price}Kz | {time}min</Text>
+						<View style={{flexDirection: "row", gap: 5, top: 5}}>
+							<Ionicons name="speedometer" size={RFValue(16)} color= "cyan" />
+							<Text style={{color: "white", fontSize: RFValue(14)}}>~{time} min |</Text>
+							<Ionicons name="cash" size={RFValue(16)} color= "cyan" />
+							<Text style={{color: "white", fontSize: RFValue(14)}}>{price} Kz</Text>
+                 		</View>
 					</View>
 				</View>
 			}

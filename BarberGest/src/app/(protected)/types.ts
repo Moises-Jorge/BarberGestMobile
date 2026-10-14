@@ -27,23 +27,35 @@ export interface UpdateBarbeiroDTO {
 }
 
 // ----- Serviço -----
-export interface Servico {
+export interface Servico
+{
   id: string;
-  name: string;
-  price: number;
-  serv_time: number; // minutos
-}
-
-export interface CreateServicoDTO {
-  name: string;
-  price: number;
-  serv_time: number;
+  nome: string;
+  descricao?: string | null;
+  preco: number;
+  duracao: number;
+  imagemUrl?: string | null;
+  ativo: boolean;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface UpdateServicoDTO {
-  name?: string;
-  price?: number;
-  serv_time?: number;
+  nome?: string;
+  descricao?: string | null;
+  preco?: number;
+  duracao?: number;
+  imagemUrl?: string | null;
+  ativo?: boolean;
+}
+
+export interface CreateServicoDTO {
+  nome: string;
+  descricao?: string | null;
+  preco: number;
+  duracao: number;
+  imagemUrl?: string | null;
+  ativo?: boolean;
 }
 
 // ----- Cliente -----
