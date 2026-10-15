@@ -6,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { UnStableCurvedLoopMarquee } from "../components/organisms/curved-marquee";
 import { styles } from "../styles";
 import { RFValue } from "react-native-responsive-fontsize";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
@@ -51,7 +52,7 @@ export default function SignIn() {
       return Object.keys(newErrors).length === 0;
   };
 
-  const enviar = async () => {
+    const enviar = async () => {
     setLoading(true);
     setMensagem('');
     try {
@@ -63,15 +64,25 @@ export default function SignIn() {
         },
         body: JSON.stringify({ nome: name.trim(), telefone: phone, senha: password }),
       });
+
       const text = await response.text();
       console.log(response.status, text);
-      let data = null;
-      if (response.status !== 204) {
-        data = await response.json().catch(() => null);
+
+      let data: any = null;
+      try {
+        data = text ? JSON.parse(text) : null;
+      } catch {
+        data = null;
       }
 
       if (!response.ok) {
         throw new Error(data?.message || `Erro ${response.status}`);
+      }
+      const clientes = data?.clientes ?? data;
+      console.log("a guardar:", clientes);
+
+      if (clientes) {
+        await AsyncStorage.setItem("clientes", JSON.stringify(clientes));
       }
       return true;
     } catch (error) {

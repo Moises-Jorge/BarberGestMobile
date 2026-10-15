@@ -3,7 +3,7 @@ import Footer from "@/components/footer/footer";
 import { useAuth } from "@/hooks/useAuth";
 import MaskedView from "@react-native-masked-view/masked-view";
 import { LinearGradient } from "expo-linear-gradient";
-import { Button, Dimensions, Modal, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Button, Dimensions, Modal, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
 import { mockBarbeiros, mockServicos } from "./data";
@@ -12,17 +12,56 @@ import { Ionicons } from "@expo/vector-icons";
 import { useRef, useState } from "react";
 import { BlurTargetView, BlurView } from "expo-blur";
 import SaveButton from "@/shared/components/save-button";
-import { Color } from "expo-router";
+import { Color, router } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const {width, height} = Dimensions.get("screen");
+
+const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function Profile() {
   const { signOut, name } = useAuth();
   const [visible, setVisible] = useState(false);
   const [visible2, setVisible2] = useState(false);
+  const [erro, setErro] = useState(false);
   const containerRef = useRef(null);
+
   function wait(arg0: number): void | Promise<void> {
 		throw new Error("Function not implemented.");
 	}
+
+  const [loading, setLoading] = useState(false);
+
+  async function apagarConta() {
+    try {
+      setLoading(true);
+
+      const clientes = JSON.parse((await AsyncStorage.getItem("clientes")) ?? "{}");
+      const clientesId = clientes.id;
+      //onsole.log("clientesId:", clientes);
+
+      if (!clientesId) throw new Error("Usuário não encontrado");
+
+      const response = await fetch(`${url}/api/clientes/${clientesId}`, {
+        method: "DELETE",
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+        },
+      });
+      if (!response.ok) {
+        const erro = await response.json().catch(() => null);
+        throw new Error(erro?.message ?? "Erro ao apagar conta");
+      }
+
+      await AsyncStorage.multiRemove(["token", "clientes"]);
+      setVisible2(false);
+      router.replace("/signIn");
+    } catch (e: any) {
+      setErro(true);
+    } finally {
+      setLoading(false);
+    }
+  }
+
   return (
     <SafeAreaView style={[{backgroundColor: "#000000", flex: 1, gap: 0}]}>
         <StatusBar backgroundColor="#000000" barStyle="light-content" />
@@ -98,7 +137,7 @@ export default function Profile() {
         >
           <BlurView intensity={40} tint="dark" style={{flex: 1}}>
             <View style={styles.closeButtonView}>
-              <TouchableOpacity style={styles.closeButton} onPress={() => setVisible2(!visible2)}>
+              <TouchableOpacity style={styles.closeButton} onPress={() => {setVisible2(!visible2), setErro(false)}}>
                 <Ionicons name="close" color="red" size={RFValue(22)}/>
               </TouchableOpacity>
             </View>
@@ -108,16 +147,32 @@ export default function Profile() {
               <View style={{width: width * .65}}>
                 <Text style={{color: "white", textAlign: "center", fontSize: RFValue(14)}}>
                   Todos os seus dados serão permanentemente apagados!
+                  {"\n\n"}
+                  Tem certeza?
                 </Text>
+                {erro && (
+                  <Text style={{ color: "#e24646", textAlign: "center", marginTop: 10 }}>
+                    Não foi possível apagar a conta. Tente novamente.
+                  </Text>
+                )}
                </View>
-               <View style={{flexDirection: "row", marginTop: 30, width: width * .70, gap: 10}}>
+               <View style={{flexDirection: "row", marginTop: 20, width: width * .70, gap: 10}}>
                   <TouchableOpacity style={[styles.entrarButton, {
                     backgroundColor: "cyan",
-                    flex: 1}]} onPress={() => setVisible2(false)}>
+                    flex: 1}]} onPress={() => {setVisible2(false), setErro(false)}}>
                     <Text style = {{fontSize: RFValue(14)}}>Cancelar</Text>
                   </TouchableOpacity>
-                  <TouchableOpacity style={[styles.entrarButton, {backgroundColor: "#e24646ff", flex: 1,}]}>
-                    <Text style = {{fontSize: RFValue(14)}}>Apagar conta</Text>
+                  <TouchableOpacity style={[styles.entrarButton, {backgroundColor: "#e24646ff", flex: 1,}]}
+                    onPress={apagarConta}
+                  >
+                    { loading ? (
+                      <ActivityIndicator color="black" size={RFValue(13)}
+                        style={{ flex: 1,
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      />
+                    ) : (<Text style = {{fontSize: RFValue(14)}}>Apagar conta</Text>)}
                   </TouchableOpacity>
                 </View>
              </View>
