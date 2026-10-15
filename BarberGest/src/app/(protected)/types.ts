@@ -59,23 +59,24 @@ export interface CreateServicoDTO {
 }
 
 // ----- Cliente -----
-export interface Cliente {
+export interface Cliente
+{
   id: string;
-  name: string;
-  phone_number: string;
+  nome: string;
+  telefone: string;
   password: string;
 }
 
 export interface CreateClienteDTO {
   name: string;
   password: string;
-  phone_number: string;
+  telefone: string;
 }
 
 export interface UpdateClienteDTO {
   name?: string;
   password?: string;
-  phone_number?: string;
+  telefone?: string;
 }
 
 // ----- Erro padrão -----

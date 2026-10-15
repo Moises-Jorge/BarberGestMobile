@@ -9,25 +9,45 @@ import { styles } from "../../styles";
 import { mockBarbeiros, mockServicos } from "./data";
 import { RFValue } from "react-native-responsive-fontsize";
 import { Ionicons } from "@expo/vector-icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { BlurTargetView, BlurView } from "expo-blur";
 import SaveButton from "@/shared/components/save-button";
 import { Color, router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Cliente } from "./types";
 const {width, height} = Dimensions.get("screen");
 
 const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function Profile() {
-  const { signOut, name } = useAuth();
+  const { signOut, deleteAccount } = useAuth();
   const [visible, setVisible] = useState(false);
+  const [enable, setEnable] = useState(false);
+  const [loading3, setLoading3] = useState(false);
   const [visible2, setVisible2] = useState(false);
   const [erro, setErro] = useState(false);
+  const [clientes, setClientes] = useState<Cliente | null>(null);
   const containerRef = useRef(null);
+  const [nome, setNome] = useState("");
+  const [salvo, setSalvo] = useState(false);
+  const [number, setNumber] = useState("");
 
-  function wait(arg0: number): void | Promise<void> {
-		throw new Error("Function not implemented.");
-	}
+  const changed =
+    (nome.trim() !== "" && nome.trim() !== clientes?.nome) ||
+    (number.trim() !== "" && number.trim() !== clientes?.telefone);
+
+  function wait(ms: number) {
+  return new Promise<void>((resolve) => setTimeout(resolve, ms));
+}
+
+  async function handleDelete() {
+  try {
+    await apagarConta();      // 1. apaga na BD (chamada à API)
+    await deleteAccount();    // 2. limpa storage + isLoggedIn = false
+  } catch (error) {
+    setErro(true);
+  }
+}
 
   const [loading, setLoading] = useState(false);
 
@@ -62,6 +82,65 @@ export default function Profile() {
     }
   }
 
+  async function atualizarDados() {
+      const cliente = JSON.parse((await AsyncStorage.getItem("clientes")) ?? "{}");
+      const clientesId = cliente.id;
+      //onsole.log("clientesId:", clientes);
+
+      if (!clientesId) throw new Error("Usuário não encontrado");
+
+      const response = await fetch(`${url}/api/clientes/${clientesId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          "ngrok-skip-browser-warning": "true",
+        },
+        body: JSON.stringify({
+          nome: nome.trim() || clientes?.nome,
+          telefone: number.trim() || clientes?.telefone}),
+      });
+      if (!response.ok) {
+        const erro = await response.json().catch(() => null);
+        throw new Error(erro?.message ?? "Erro ao atualizar oa dados");
+      }
+      const atualizado = await response.json().catch(() => null);
+      const novo = atualizado ?? {
+        ...cliente,
+        nome: nome.trim() || clientes?.nome,
+        telefone: number.trim() || clientes?.telefone,
+      };
+
+      setClientes(novo);
+      await AsyncStorage.setItem("clientes", JSON.stringify(novo));
+      setSalvo(true);
+      setNome("");
+      setNumber("");
+  }
+  useEffect(() => {
+      async function logClients() {
+        try {
+              setLoading3(true);
+              const clientes = JSON.parse((await AsyncStorage.getItem("clientes")) ?? "{}");
+              const clientesId = clientes.id;
+              const response = await fetch(`${url}/api/clientes/${clientesId}`, {
+              headers: { "ngrok-skip-browser-warning": "true" },
+        });
+        //console.log("status:", response.status);
+        const text = await response.text();
+        //console.log("resposta:", text.slice(0, 300));
+        if (!response.ok) { setErro(true); return };
+        const json = JSON.parse(text);
+        setClientes(json);
+        } catch (error) {
+          setErro(true);
+        }
+        finally{
+          setLoading3(false);
+        }
+      }
+      logClients();
+      }, []);
+
   return (
     <SafeAreaView style={[{backgroundColor: "#000000", flex: 1, gap: 0}]}>
         <StatusBar backgroundColor="#000000" barStyle="light-content" />
@@ -75,7 +154,10 @@ export default function Profile() {
         >
           <BlurView intensity={40} tint="dark" style={{flex: 1}}>
             <View style={styles.closeButtonView}>
-              <TouchableOpacity style={styles.closeButton} onPress={() => setVisible(!visible)}>
+              <TouchableOpacity style={styles.closeButton} onPress={() => {setVisible(!visible);
+                setNome("");
+                setNumber("");
+                setSalvo(false)}}>
                 <Ionicons name="close" color="red" size={RFValue(22)}/>
               </TouchableOpacity>
             </View>
@@ -88,7 +170,7 @@ export default function Profile() {
                   marginBottom: 20,
                   borderRadius: (width * 0.20) / 2}]}>
                     <Text style={{ color: "cyan", fontSize: RFValue(40), fontWeight: "bold", position: "absolute"}}>
-                      {name.charAt(0).toUpperCase()}
+                      {clientes?.nome?.charAt(0).toUpperCase() ?? clientes?.nome.charAt(0).toUpperCase()}
                     </Text>
                     <TouchableOpacity style={[styles.editButton, {marginTop: (width * 0.15)}]} onPress={() => setVisible(true)}>
                       <Ionicons name="pencil-sharp" color="cyan" size={RFValue(18)}/>
@@ -97,21 +179,24 @@ export default function Profile() {
                 <View style={{gap: 20, alignSelf: "center"}}>
                   <View>
                     <Text style={{color: "white", paddingHorizontal: 5, paddingVertical: 5, fontSize: RFValue(15), fontWeight: "bold"}}>Nome</Text>
-                    <TextInput style={[styles.input, {width: width * .65}]} placeholder={name} placeholderTextColor="#9c9c9cff"/>
+                    <TextInput style={[styles.input, {width: width * .65}]} value={nome} onChangeText={(t) => {setNome(t); setSalvo(false)}} placeholder={clientes?.nome} placeholderTextColor="#9c9c9cff"/>
                   </View>
                   <View>
                     <Text style={{color: "white", paddingHorizontal: 5, paddingVertical: 5, fontSize: RFValue(15), fontWeight: "bold"}}>Telemóvel</Text>
-                    <TextInput style={[styles.input, {width: width * .65}]} placeholder="945 252 451" placeholderTextColor="#9c9c9cff"/>
+                    <TextInput style={[styles.input, {width: width * .65}]} value={number} onChangeText={(t) => {setNumber(t); setSalvo(false)}} placeholder={clientes?.telefone} placeholderTextColor="#9c9c9cff"/>
                   </View>
                 </View>
 
                 <View>
                   <SaveButton.Root
-                    style={{alignSelf: "center", marginTop: 30, maxWidth: width * .65, width: width * .65,}}
-                    onSave={() => wait(50)}
+                    style={{alignSelf: "center",
+                      marginTop: 30,
+                      maxWidth: width * .65,
+                      width: width * .65,
+                      opacity: changed || salvo ? 1 : 0.5,}}
+                    onSave={atualizarDados}
                     //resetAfter={2000}
-                    /* disabled={selectedId === null ? true : false} */
-                    /* onSaved={()=> setVisible(false)} */
+                    disabled={!changed}
                     >
                   <SaveButton.Label>
                       Salvar
@@ -163,7 +248,7 @@ export default function Profile() {
                     <Text style = {{fontSize: RFValue(14)}}>Cancelar</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={[styles.entrarButton, {backgroundColor: "#e24646ff", flex: 1,}]}
-                    onPress={apagarConta}
+                    onPress={handleDelete}
                   >
                     { loading ? (
                       <ActivityIndicator color="black" size={RFValue(13)}
@@ -195,13 +280,21 @@ export default function Profile() {
               <View style={[styles.userImag, {width: width * 0.20, marginTop: 0,
                 height: width * 0.20,
                 borderRadius: (width * 0.20) / 2}]}>
+                  { loading3 ? (
+                      <ActivityIndicator color="cyan" size={RFValue(25)}
+                        style={{
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      />
+                    ) : (
                   <Text style={{ color: "cyan", fontSize: RFValue(40), fontWeight: "bold"}}>
-                    {name.charAt(0).toUpperCase()}
-                  </Text>
+                    {clientes?.nome.charAt(0).toUpperCase()}
+                  </Text>)}
               </View>
                 <View style={{alignSelf: "center"}}>
                   <Text style={[styles.barbname, {fontSize: RFValue(18),}]}>
-                    {name}
+                    {clientes?.nome}
                   </Text>
                   <Text style={{color: "gray", fontSize: RFValue(15)}}>cliente</Text>
                 </View>
@@ -211,10 +304,10 @@ export default function Profile() {
             </TouchableOpacity>
           </View>
           <View style={styles.settingOptions}>
-            <TouchableOpacity style={styles.settingsOption}>
+            <View style={styles.settingsOption}>
                 <Text style={{color: "white", fontSize: RFValue(15)}}>Telemóvel</Text>
-                <Text style={{color: "gray", fontSize: RFValue(15)}}>945 252 451</Text>
-            </TouchableOpacity>
+                <Text style={{color: "gray", fontSize: RFValue(15)}}>{clientes?.telefone}</Text>
+            </View>
             <View style={styles.settingsOption}>
                 <Text style={{color: "white", fontSize: RFValue(15)}}>Cliente de</Text>
                 <Text style={{color: "gray", fontSize: RFValue(15)}}>Nome da Barbearia</Text>

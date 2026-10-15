@@ -21,17 +21,19 @@ import { mockBarbeiros, mockServicos } from "./data";
 import { saveAgendamento } from "./agendamento";
 import { useEffect, useState } from "react";
 import {RFValue} from "react-native-responsive-fontsize";
-import { Barbeiro, Servico } from "./types";
+import { Barbeiro, Cliente, Servico } from "./types";
 import { Ionicons } from "@expo/vector-icons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function Index() {
-	const { signOut, name } = useAuth();
 	const [barbers, setBarbers] = useState<Barbeiro[]>([]);
 	const [services, setServices] = useState<Servico[]>([]);
 	const [erro, setErro] = useState(false);
 	const [loading, setLoading] = useState(true);
+	const [loading3, setLoading3] = useState(false);
+	const [clientes, setClientes] = useState<Cliente | null>(null);
 
 	const [erro2, setErro2] = useState(false);
 	const [loading2, setLoading2] = useState(true);
@@ -102,6 +104,30 @@ export default function Index() {
 				logBarbers()
 			}, []); */
 
+	useEffect(() => {
+      async function logClients() {
+        try {
+              setLoading3(true);
+              const clientes = JSON.parse((await AsyncStorage.getItem("clientes")) ?? "{}");
+              const clientesId = clientes.id;
+              const response = await fetch(`${url}/api/clientes/${clientesId}`, {
+              headers: { "ngrok-skip-browser-warning": "true" },
+        });
+        //console.log("status:", response.status);
+        const text = await response.text();
+        //console.log("resposta:", text.slice(0, 300));
+        if (!response.ok) { setErro(true); return };
+        const json = JSON.parse(text);
+        setClientes(json);
+        } catch (error) {
+          setErro(true);
+        }
+        finally{
+          setLoading3(false);
+        }
+      }
+      logClients();
+      }, []);
 	return (
 		<SafeAreaView style={[{backgroundColor: "#000000ff", flex: 1, gap: 0}]}>
 			<StatusBar backgroundColor="#000000" barStyle="light-content" />
@@ -112,13 +138,13 @@ export default function Index() {
 			</View>
 				<TouchableOpacity onPress={() => router.navigate("/profile")} style={styles.userImag}>
 					<Text style={{ color: "cyan", fontSize: RFValue(18), fontWeight: "bold"}}>
-						{name.charAt(0).toUpperCase()}
+						{clientes?.nome.charAt(0).toUpperCase()}
 					</Text>
 				</TouchableOpacity>
 		</View>
 			<ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
 		<View style={{alignSelf: "flex-start", left: 20}}>
-			{name ? <Text style={styles.title4}>Olá, {name.split(" ")[0]}!</Text> : null}
+			{clientes?.nome ? <Text style={styles.title4}>Olá, {clientes?.nome.split(" ")[0]}!</Text> : null}
 		</View>
 			<View style={[styles.barbImageCard]}>
 				<Image
