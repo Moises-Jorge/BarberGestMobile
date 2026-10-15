@@ -66,7 +66,7 @@ export const styles = StyleSheet.create({
     {
         backgroundColor: "#363636ff",
         borderColor: "#4d4d4dff",
-        borderWidth: 2,
+        borderWidth: 3,
         padding: 10,
         borderRadius: 50,
         width: 250,
@@ -158,7 +158,7 @@ export const styles = StyleSheet.create({
     {
         backgroundColor: "#141414ff",
         borderColor: "#1d1d1dff",
-        borderWidth: 2,
+        borderWidth: 3,
         width: width * 0.10,
         height: width * 0.10,
         borderRadius: (width * 0.10) / 2,
@@ -228,7 +228,8 @@ export const styles = StyleSheet.create({
         borderWidth: 3,
         alignSelf: "center",
         borderRadius: 30,
-        //justifyContent: "space-between"
+        flexDirection: "row",
+        justifyContent: "space-between"
     },
     settingsOption:
     {
@@ -248,6 +249,46 @@ export const styles = StyleSheet.create({
     {
         marginTop: 20,
         gap: 10,
+    },
+    editButton:
+    {
+        backgroundColor: "#141414ff",
+        borderColor: "#1d1d1dff",
+        borderWidth: 3,
+        height: width * 0.10,
+        width: width * 0.10,
+        borderRadius: (width * 0.10) / 2,
+        alignItems: "center",
+        justifyContent: "center",
+        alignSelf: "flex-end",
+        //position: "absolute",
+    },
+    closeButton:
+    {
+        //alignSelf: "flex-end",
+        //padding: 30,
+    },
+    closeButtonView:
+    {
+        backgroundColor: "#141414ff",
+        borderColor: "#1d1d1dff",
+        borderWidth: 3,
+        height: width * 0.10,
+        width: width * 0.10,
+        borderRadius: (width * 0.10) / 2,
+        alignSelf: "flex-end",
+        margin: 20,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    modalContent:
+    {
+        backgroundColor: "#141414ff",
+        borderColor: "#1d1d1dff",
+        borderRadius: 30,
+        borderWidth: 3,
+        padding: 30,
+        alignSelf: "center",
     }
     /* barbImageCard:
     {
