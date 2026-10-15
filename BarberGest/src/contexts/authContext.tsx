@@ -3,11 +3,12 @@ import { createContext, PropsWithChildren, useState, useEffect } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type AuthState = {
-	isLoggedIn: boolean;
-    isLoading: boolean;
-    name: string;
-    signIn: (newName: string) => void;
-    signOut: () => void;
+  isLoggedIn: boolean;
+  isLoading: boolean;
+  name: string;
+  signIn: (newName: string) => Promise<void>;
+  signOut: () => Promise<void>;
+  deleteAccount: () => Promise<void>;
 };
 
 const AUTH_STORAGE_KEY = "BarberGest:authState";
@@ -15,71 +16,75 @@ const AUTH_STORAGE_KEY = "BarberGest:authState";
 export const AuthContext = createContext<AuthState>({} as AuthState);
 
 export function AuthProvider({ children }: PropsWithChildren) {
-    const [isLoggedIn, setIsLoggedIn] = useState(true);
-    const [isLoading, setIsLoading] = useState(true);
-    const [name, setName] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // começa false
+  const [isLoading, setIsLoading] = useState(true);
+  const [name, setName] = useState("");
 
-    useEffect(() => {
-        async function loadStoredAuth() {
-        const storedName = await AsyncStorage.getItem("userName");
-        if (storedName) {
-            setName(storedName);
-            setIsLoggedIn(true);
+  useEffect(() => {
+    async function loadAuthState() {
+      try {
+        const stored = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          setIsLoggedIn(!!parsed.isLoggedIn);
+          setName(parsed.name ?? "");
+        } else {
+          setIsLoggedIn(false);
         }
+      } catch (error) {
+        console.error("Error loading auth state:", error);
+        setIsLoggedIn(false); // em caso de erro, NÃO logado
+      } finally {
         setIsLoading(false);
-        }
-        loadStoredAuth();
-    }, []);
-
-    async function storageAuthState(newState: { isLoggedIn: boolean}) {
-        try {
-            await AsyncStorage.setItem(AUTH_STORAGE_KEY, JSON.stringify(newState));
-        }
-        catch (error) {
-            console.error("Error storing auth state:", error);
-        }
+      }
     }
-    async function signIn(newName: string) {
-        await AsyncStorage.setItem("userName", newName);
-        setName(newName);
-        setIsLoggedIn(true);
-        storageAuthState({ isLoggedIn: true });
-        router.replace("/");
-    };
+    loadAuthState();
+  }, []);
 
-    async function signOut() {
-        await AsyncStorage.removeItem("userName");
-        setName("");
-        setIsLoggedIn(false);
-        storageAuthState({ isLoggedIn: false });
-        router.replace("/signIn");
-    };
-    useEffect(() => {
-        async function loadAuthState()
-        {
-            try {
-                await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate a delay for loading
-                const storedState = await AsyncStorage.getItem(AUTH_STORAGE_KEY);
-                if (storedState) {
-                    const parsedState = JSON.parse(storedState);
-                    setIsLoggedIn(parsedState.isLoggedIn);
-                   // console.log("Auth state loaded from storage:", parsedState);
-                }
-            }
-            catch (error) {
-                console.error("Error loading auth state:", error);
-                setIsLoggedIn(true); // Default to logged in if there's an error
-            }
-            finally {
-                setIsLoading(false);
-            }
-        }
-        loadAuthState();
-    }, []);
+  async function signIn(newName: string) {
+    try {
+      await AsyncStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({ isLoggedIn: true, name: newName })
+      );
+    } catch (error) {
+      console.error("Error storing auth state:", error);
+    }
+    setName(newName);
+    setIsLoggedIn(true);
+    router.replace("/");
+  }
 
-    return (
-        <AuthContext.Provider value={{ isLoggedIn, isLoading, name, signIn, signOut }}>
-            {children}
-        </AuthContext.Provider>
-    );
+  async function signOut() {
+    try {
+      await AsyncStorage.setItem(
+        AUTH_STORAGE_KEY,
+        JSON.stringify({ isLoggedIn: false, name: "" })
+      );
+    } catch (error) {
+      console.error("Error storing auth state:", error);
+    }
+    setName("");
+    setIsLoggedIn(false);
+    router.replace("/signIn");
+  }
+
+  async function deleteAccount() {
+    try {
+      await AsyncStorage.removeItem(AUTH_STORAGE_KEY); 
+    } catch (error) {
+      console.error("Error deleting account:", error);
+    }
+    setName("");
+    setIsLoggedIn(false);
+    router.replace("/signIn");
+  }
+
+  return (
+    <AuthContext.Provider
+      value={{ isLoggedIn, isLoading, name, signIn, signOut, deleteAccount }}
+    >
+      {children}
+    </AuthContext.Provider>
+  );
 }
