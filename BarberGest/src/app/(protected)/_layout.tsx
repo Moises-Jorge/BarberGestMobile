@@ -6,7 +6,7 @@ import Footer from "@/components/footer/footer";
 export default function ProtectedLayout() {
 	const { isLoggedIn, isLoading } = useAuth();
 
-	const HIDE_FOOTER_ON = ["/services"];
+	const HIDE_FOOTER_ON = ["/details"];
 
 	const pathname = usePathname();
 	const showFooter = !HIDE_FOOTER_ON.includes(pathname);

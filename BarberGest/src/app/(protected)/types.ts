@@ -64,7 +64,7 @@ export interface Cliente
   id: string;
   nome: string;
   telefone: string;
-  password: string;
+  senha: string;
 }
 
 export interface CreateClienteDTO {
