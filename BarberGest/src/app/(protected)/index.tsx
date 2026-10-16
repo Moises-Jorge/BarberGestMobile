@@ -171,7 +171,7 @@ export default function Index() {
 								<Text style={[styles.barbname, {fontSize: RFValue(18),}]}>
 									{selectedName}
 								</Text>
-								<Text style={{color: "gray", fontSize: RFValue(15)}}>Barbeiro</Text>
+								<Text style={{color: "gray", fontSize: RFValue(15)}}>Barbeiro/a</Text>
 								<Text style={[styles.startTime, {color: "gray", marginTop: 0}]}>
 									{hEntrada} - {hSaida}
 								</Text>
