@@ -13,7 +13,7 @@ import { RFValue } from "react-native-responsive-fontsize";
 
 const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
-export default function Services() {
+export default function Details() {
 	const [datas, setDatas] = useState([]);
 	const [erro, setErro] = useState(false);
 	const [loading, setLoading] = useState(true);
@@ -68,7 +68,7 @@ export default function Services() {
 		return true;
 	}
 
-	const handleSignIn = async () => {
+	const handleAgendamento = async () => {
 		const sucesso = handleSave();
 		if (sucesso) {
 			saveAgendamento({barbeiroName: nameDobarb, servico: name, preco: price, duracao: time,});
@@ -187,7 +187,7 @@ export default function Services() {
 				marginTop: 20,
 				marginLeft: 20,
 				marginBottom: 20,
-				}}>Escolha o horario</Text>
+				}}>Escolha o horário</Text>
 			<View style={{ flexDirection: "row", justifyContent: "space-evenly"}}>
 				<View style={{flexDirection: "row", gap: 10,}}>
 					<Text style={{color: "white", alignSelf: "center"}}>Hora</Text>
@@ -204,7 +204,7 @@ export default function Services() {
 					onSave={() => wait(1000)}
 					//resetAfter={2000}
 					disabled={selectedId === null ? true : false}
-					onSaved={() => handleSignIn()}
+					onSaved={() => handleAgendamento()}
 					>
 					<SaveButton.Label
 					>

@@ -14,29 +14,35 @@ import { Pressable,
 	Image,
 	Button,
 	Dimensions,
-	ActivityIndicator } from "react-native";
+	ActivityIndicator, 
+	Modal} from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { styles } from "../../styles";
 import { mockBarbeiros, mockServicos } from "./data";
 import { saveAgendamento } from "./agendamento";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {RFValue} from "react-native-responsive-fontsize";
 import { Barbeiro, Cliente, Servico } from "./types";
 import { Ionicons } from "@expo/vector-icons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { BlurTargetView, BlurView } from "expo-blur";
 
 const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function Index() {
 	const [barbers, setBarbers] = useState<Barbeiro[]>([]);
 	const [services, setServices] = useState<Servico[]>([]);
+	const containerRef = useRef(null);
 	const [erro, setErro] = useState(false);
+	const [visible, setVisible] = useState(false);
 	const [loading, setLoading] = useState(true);
 	const [loading3, setLoading3] = useState(false);
 	const [clientes, setClientes] = useState<Cliente | null>(null);
-
 	const [erro2, setErro2] = useState(false);
 	const [loading2, setLoading2] = useState(true);
+	const [selectedName, setSelectedName] = useState("");
+	const [hEntrada, setHEntrada] = useState("");
+	const [hSaida, setHsaida] = useState("");
 	const {width, height} = Dimensions.get("screen");
 
 	useEffect(() => {
@@ -128,9 +134,54 @@ export default function Index() {
       }
       logClients();
       }, []);
+
 	return (
 		<SafeAreaView style={[{backgroundColor: "#000000ff", flex: 1, gap: 0}]}>
 			<StatusBar backgroundColor="#000000" barStyle="light-content" />
+
+			<Modal
+				animationType="slide"
+				blurTarget={containerRef}
+				transparent={true}
+				visible={visible}
+				onRequestClose={() => setVisible(!visible)}
+			>
+				<BlurView intensity={50} tint="dark" style={{flex: 1}}>
+					<View style={styles.closeButtonView}>
+					<TouchableOpacity style={styles.closeButton} onPress={() => {setVisible(!visible)}}>
+						<Ionicons name="close" color="red" size={RFValue(22)}/>
+					</TouchableOpacity>
+					</View>
+
+					<View style={[styles.modalContent, /* {padding: 10} */]}>
+						<View style={{flexDirection: "row", gap: 10}}>
+							<View style={[styles.userImag, {width: width * 0.30, marginTop: 0,
+								height: width * 0.30,
+								borderRadius: (width * 0.30) / 2}]}>
+								<Image
+									source={require("../../../assets/images/Screenshot from 2026-09-25 13-54-10.png")}
+									style =
+									{{
+										height: width * .30,
+										width: width * .30,
+										borderRadius: (width * .30)/2,
+									}}/>
+							</View>
+							<View style={{alignSelf: "center", gap: 5}}>
+								<Text style={[styles.barbname, {fontSize: RFValue(18),}]}>
+									{selectedName}
+								</Text>
+								<Text style={{color: "gray", fontSize: RFValue(15)}}>Barbeiro</Text>
+								<Text style={[styles.startTime, {color: "gray", marginTop: 0}]}>
+									{hEntrada} - {hSaida}
+								</Text>
+								</View>
+							</View>
+					</View>
+
+				</BlurView>
+			</Modal>
+
 			<View style = {{flexDirection: "row", justifyContent: "space-between", paddingBottom: 8}}>
 			<View style={{flexDirection: "row", alignSelf: "flex-start", left: 20, marginTop: 20}}>
 				<Text style={{color: "white", fontSize: RFValue(25), fontWeight: "bold"}}>Barber</Text>
@@ -143,25 +194,26 @@ export default function Index() {
 				</TouchableOpacity>
 		</View>
 			<ScrollView contentContainerStyle={{ paddingBottom: 80 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
-		<View style={{alignSelf: "flex-start", left: 20}}>
-			{clientes?.nome ? <Text style={styles.title4}>Olá, {clientes?.nome.split(" ")[0]}!</Text> : null}
-		</View>
-			<View style={[styles.barbImageCard]}>
-				<Image
-					source={require("../../../assets/images/barbershop.jpeg")}
-					style={[styles.barbImg]}
-				/>
+				<BlurTargetView ref={containerRef}>
+				<View style={{alignSelf: "flex-start", left: 20}}>
+					{clientes?.nome ? <Text style={styles.title4}>Olá, {clientes?.nome.split(" ")[0]}!</Text> : null}
+				</View>
+				<View style={[styles.barbImageCard]}>
+					<Image
+						source={require("../../../assets/images/barbershop.jpeg")}
+						style={[styles.barbImg]}
+					/>
 				<View style={[styles.wrapper, styles.barbInfo]} pointerEvents="box-none">
 					{/* <MaskedView
 							style={[StyleSheet.absoluteFill]}
 							pointerEvents="none"
 							maskElement={ */}
-							<LinearGradient
-								colors={["transparent", "#000000ff"]}
-								locations={[0, 1]}
-								style={[StyleSheet.absoluteFill, {opacity: .7}]}
-							/>
-							{/* }
+					<LinearGradient
+						colors={["transparent", "#000000ff"]}
+						locations={[0, 1]}
+						style={[StyleSheet.absoluteFill, {opacity: .7}]}
+					/>
+					{/* }
 						>
 					</MaskedView> */}
 					<Text style={styles.barbname}>Barbearia Não sei mais quanto</Text>
@@ -190,7 +242,7 @@ export default function Index() {
 				spacing={0}
 				renderItem={({ item }) => (
 					<Pressable onPress={() => {router.navigate({
-						pathname: "/services",
+						pathname: "/details",
 						params : {name: item.nome, price: item.preco, time: item.duracao, descricao: item.descricao}});
 						saveAgendamento({ servico: item.nome});}} style={[styles.barCard2]}>
 						<View style={[styles.wrapper, styles.barbInfo]} pointerEvents="box-none">
@@ -242,7 +294,11 @@ export default function Index() {
 				showsHorizontalScrollIndicator={false}
 				style={{paddingHorizontal: 5}}
 				renderItem ={({item}) =>
-					<Pressable key={item.id} style={styles.barCard}>
+					<TouchableOpacity onPress={()=> {setVisible(true);
+					setSelectedName(item.nome);
+					setHEntrada(item.h_entrada);
+					setHsaida(item.h_saida)}}
+					key={item.id} style={styles.barCard}>
 						<Image
 							source={require("../../../assets/images/Screenshot from 2026-09-25 13-54-10.png")}
 							style =
@@ -265,9 +321,10 @@ export default function Index() {
 							{item.h_entrada} - {item.h_saida}
 							</Text>
 						</View>
-					</Pressable>
+					</TouchableOpacity>
 				}
 				/>)}
+				</BlurTargetView>
 			</ScrollView>
 		</SafeAreaView>
 	)
