@@ -21,9 +21,11 @@ export default function Footer() {
     const pathname = usePathname();
     const height = 100 + insets.bottom;
     const [tab, setTab] = useState<string>("/");
+  
     useEffect(() => {
         setTab(pathname);
       }, [pathname]);
+
   return (
     <View style={[styles.wrapper, { height }]} pointerEvents="box-none">
       {/* <MaskedView

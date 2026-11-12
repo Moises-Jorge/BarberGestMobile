@@ -11,7 +11,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function SignIn() {
-  const { signIn } = useAuth();
+  const { signIn, token } = useAuth();
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
   const [ok, setOk] = useState(true);
@@ -60,6 +60,7 @@ export default function SignIn() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`,
           'ngrok-skip-browser-warning': 'true',
         },
         body: JSON.stringify({ nome: name.trim(), telefone: phone, senha: password }),
@@ -84,7 +85,7 @@ export default function SignIn() {
       if (clientes) {
         await AsyncStorage.setItem("clientes", JSON.stringify(clientes));
       }
-      return true;
+      return data;
     } catch (error) {
       setMensagem(error instanceof Error ? error.message : 'Erro inesperado');
       return false;
@@ -94,16 +95,23 @@ export default function SignIn() {
   };
 
   const handleSignIn = async () => {
-    if (!validate()) {
-      setOk(false);
-      return;
-    }
-    setOk(true);
-    const sucesso = await enviar();
-    if (sucesso) {
-      signIn(name.trim());
-    }
-  };
+  if (!validate()) {
+    setOk(false);
+    return;
+  }
+
+  setOk(true);
+
+  const sucesso = await enviar();
+
+  if (sucesso?.accessToken && sucesso?.refreshToken) {
+    await signIn(
+      sucesso.accessToken,
+      sucesso.refreshToken,
+      sucesso.user.nome
+    );
+  }
+};
 
   return (
     <SafeAreaView style={styles.container}>

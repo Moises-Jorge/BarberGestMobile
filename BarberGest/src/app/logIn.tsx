@@ -6,30 +6,30 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { UnStableCurvedLoopMarquee } from "../components/organisms/curved-marquee";
 import { styles } from "../styles";
 import { RFValue } from "react-native-responsive-fontsize";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const url = "https://noncapsizable-mitzie-creepiest.ngrok-free.dev";
 
 export default function SignIn() {
-    const { signIn } = useAuth();
+    const { signIn, token } = useAuth();
     const [name, setName] = useState("");
+    const [phone, setPhone] = useState("");
     const [password, setPassword] = useState("");
     const [ok, setOk] = useState(true);
     const routes = useRouter();
-    const [errors, setErrors] = useState<{ name?: string; password?: string }>({});
+    const [errors, setErrors] = useState<{ phone?: string; password?: string }>({});
     const [loading, setLoading] = useState(false);
     const [mensagem, setMensagem] = useState('');
 
     const validate = () => {
-    const newErrors: { name?: string; password?: string } = {};
+    const newErrors: { phone?: string; password?: string } = {};
     const trimmedName = name.trim();
 
-    if (trimmedName.length < 2) {
-        newErrors.name = "O nome deve ter pelo menos 2 caracteres";
-    } else if (trimmedName.length > 50) {
-        newErrors.name = "O nome deve ter no máximo 50 caracteres";
-    } else if (!/^[\p{L}\s'-]+$/u.test(trimmedName)) {
-        newErrors.name = "O nome contém caracteres inválidos";
-    }
+    if (phone.length != 9) {
+      newErrors.phone = "O telefone deve ter pelo menos 9 dígitos";
+  } else if (!/^\d{9}$/.test(phone)) {
+      newErrors.phone = "O telefone só pode conter números";
+  }
 
     if (password.length < 8) {
         newErrors.password = "A senha deve ter pelo menos 8 caracteres";
@@ -40,7 +40,6 @@ export default function SignIn() {
     } else if (!/[a-z]/.test(password)) {
         newErrors.password = "A senha deve ter uma letra minúscula";
     }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -49,15 +48,16 @@ export default function SignIn() {
     setLoading(true);
     setMensagem('');
     try {
-        const response = await fetch(`${url}/api/clientes/login`, { // confirma a rota no backend
+        const response = await fetch(`${url}/api/auth/login/cliente`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          "Authorization": `Bearer ${token}`,
           'ngrok-skip-browser-warning': 'true',
         },
         body: JSON.stringify({
-            nome: name.trim(),
             senha: password,
+            telefone: phone.trim(),
         }),
         });
         const text = await response.text();
@@ -83,15 +83,32 @@ export default function SignIn() {
         };
 
         const handleLogin = async () => {
-        if (!name.trim() || !password) {
-            setMensagem('Preenche o nome e a senha');
+        if (!validate()) {
+            setOk(false);
             return;
         }
-        const data = await entrar();
-        if (data) {
-            signIn(name.trim());
+
+        setOk(true);
+
+        const sucesso = await entrar();
+
+        if (sucesso?.accessToken && sucesso?.refreshToken) {
+        // Guardar os dados do cliente
+        await AsyncStorage.setItem(
+            "clientes",
+            JSON.stringify(sucesso.user)
+        );
+
+        // Guardar os tokens na autenticação
+        await signIn(
+            sucesso.accessToken,
+            sucesso.refreshToken,
+            sucesso.user.nome
+        );
+        } else if (sucesso) {
+            setMensagem("Dados de autenticação incompletos");
         }
-        };
+    }
     return (
       <SafeAreaView style={styles.container}>
          <ScrollView contentContainerStyle={{ paddingBottom: 50 }} showsVerticalScrollIndicator={false} style={{flex: 1}}>
@@ -103,20 +120,20 @@ export default function SignIn() {
           <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"} style = {styles.formContainer}>
               <View style={styles.inputContainer}>
                   <Text style={[styles.title2, {fontSize: RFValue(20)}]}>Inicie sessão</Text>
-                  <TextInput style={styles.input} onChangeText={(t) =>{
-                    setName(t);
-                    if (errors.name) {
-                        setErrors((prevErrors) => ({ ...prevErrors, name: undefined }));
-                    }}
-                    } placeholder="Nome" onChange={() => setOk(true)} placeholderTextColor="white"/>
-                    {errors.name && <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{errors.name}</Text>}
-                  <TextInput style={styles.input} onChangeText={(t) => {
+                  <TextInput style={styles.input} placeholder="Telefone" onChangeText={(t) => {
+                    setPhone(t);
+                    if (errors.phone) {
+                        setErrors((prevErrors) => ({ ...prevErrors, phone: undefined }));
+                    }
+              }} onChange={() => setOk(true)} placeholderTextColor="white" keyboardType="numeric"/>
+              {errors.phone && <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{errors.phone}</Text>}
+            	<TextInput style={styles.input} placeholder="Senha" onChangeText={(t) => {
                     setPassword(t);
                     if (errors.password) {
                         setErrors((prevErrors) => ({ ...prevErrors, password: undefined }));
                     }
-                  }} placeholder="Senha" onChange={() => setOk(true)} placeholderTextColor="white" secureTextEntry/>
-                    {errors.password && <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{errors.password}</Text>}
+              }} onChange={() => setOk(true)} placeholderTextColor="white" secureTextEntry/>
+              {errors.password && <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{errors.password}</Text>}
                   <TouchableOpacity style={styles.entrarButton} onPress={handleLogin} disabled={loading}>
                       <Text>{ loading ? "Entrando..." : "Entrar"}</Text>
                   </TouchableOpacity>
