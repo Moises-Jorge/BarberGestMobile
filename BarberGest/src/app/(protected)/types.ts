@@ -5,11 +5,11 @@ export type Perfil = 'Admin' | 'Barbeiro' | 'Cliente';
 // ----- Barbeiro -----
 export interface Barbeiro {
   id: string;
-  name: string;
+  nome: string;
   password: string;
   img: ImageSourcePropType; // URL da imagem do barbeiro
-  start_time: string; // HH:mm
-  end_time: string; // HH:mm
+  h_entrada: string; // HH:mm
+  h_saida: string; // HH:mm
 }
 
 export interface CreateBarbeiroDTO {
