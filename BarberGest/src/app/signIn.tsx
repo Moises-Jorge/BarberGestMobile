@@ -1,7 +1,7 @@
 import { useAuth } from "@/hooks/useAuth";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { UnStableCurvedLoopMarquee } from "../components/organisms/curved-marquee";
 import { styles } from "../styles";
@@ -20,37 +20,42 @@ export default function SignIn() {
   const [errors, setErrors] = useState<{ name?: string; phone?: string; password?: string }>({});
   const [loading, setLoading] = useState(false);
   const [mensagem, setMensagem] = useState('');
+  const [serverResponse, setServerResponse] = useState('');
 
-  const validate = () => {
-  const newErrors: { name?: string; phone?: string; password?: string } = {};
-  const trimmedName = name.trim();
+      const validatePhone = (value: string): string | undefined => {
+        if (value.length === 0) return undefined; // não mostra erro com o campo vazio
+        if (!/^\d*$/.test(value)) return "O telefone só pode conter números";
+        if (value.length !== 9) return "O telefone deve ter 9 dígitos";
+        return undefined;
+    };
 
-  if (trimmedName.length < 2) {
-      newErrors.name = "O nome deve ter pelo menos 2 caracteres";
-  } else if (trimmedName.length > 40) {
-      newErrors.name = "O nome deve ter no máximo 40 caracteres";
-  } else if (!/^[\p{L}\s'-]+$/u.test(trimmedName)) {
-      newErrors.name = "O nome contém caracteres inválidos";
-  }
+    const validatePassword = (value: string): string | undefined => {
+        if (value.length === 0) return undefined;
+        if (value.length < 8) return "A senha deve ter pelo menos 8 caracteres";
+        if (value.length > 64) return "A senha é demasiado longa";
+        if (!/[A-Z]/.test(value)) return "A senha deve ter uma letra maiúscula";
+        if (!/[a-z]/.test(value)) return "A senha deve ter uma letra minúscula";
+        return undefined;
+    };
 
-    if (phone.length != 9) {
-      newErrors.phone = "O telefone deve ter pelo menos 9 dígitos";
-  } else if (!/^\d{9}$/.test(phone)) {
-      newErrors.phone = "O telefone só pode conter números";
-  }
+    const validateName = (value: string): string | undefined => {
+      const trimmed = value.trim();
+      if (trimmed.length === 0) return undefined; // não mostra erro com o campo vazio
+      if (!/^[\p{L}\s'-]+$/u.test(trimmed)) return "O nome contém caracteres inválidos";
+      if (trimmed.length < 2) return "O nome deve ter pelo menos 2 caracteres";
+      if (trimmed.length > 40) return "O nome deve ter no máximo 40 caracteres";
+      return undefined;
+    };
 
-  if (password.length < 8) {
-      newErrors.password = "A senha deve ter pelo menos 8 caracteres";
-  } else if (password.length > 64) {
-      newErrors.password = "A senha é demasiado longa";
-  } else if (!/[A-Z]/.test(password)) {
-      newErrors.password = "A senha deve ter uma letra maiúscula";
-  } else if (!/[a-z]/.test(password)) {
-      newErrors.password = "A senha deve ter uma letra minúscula";
-  }
+    const validate = () => {
+      const newErrors = {
+        name: name.trim().length === 0 ? "Introduza o nome" : validateName(name),
+        phone: phone.length === 0 ? "Introduza o telefone" : validatePhone(phone),
+        password: password.length === 0 ? "Introduza a senha" : validatePassword(password),
+      };
       setErrors(newErrors);
-      return Object.keys(newErrors).length === 0;
-  };
+      return !newErrors.name && !newErrors.phone && !newErrors.password;
+    };
 
     const enviar = async () => {
     setLoading(true);
@@ -65,6 +70,11 @@ export default function SignIn() {
         },
         body: JSON.stringify({ nome: name.trim(), telefone: phone, senha: password }),
       });
+
+      if (response.status == 400)
+        setServerResponse("Já existe um cliente com este telefone!");
+      else
+        setServerResponse('');
 
       const text = await response.text();
       console.log(response.status, text);
@@ -104,13 +114,14 @@ export default function SignIn() {
 
   const sucesso = await enviar();
 
-  if (sucesso?.accessToken && sucesso?.refreshToken) {
-    await signIn(
-      sucesso.accessToken,
-      sucesso.refreshToken,
-      sucesso.user.nome
-    );
-  }
+      if (sucesso?.accessToken && sucesso?.refreshToken) {
+      await signIn(
+        sucesso.accessToken,
+        sucesso.refreshToken,
+        sucesso.user?.nome ?? sucesso.cliente?.nome ?? sucesso.nome ?? name.trim()
+      );
+      routes.replace("/");
+    }
 };
 
   return (
@@ -123,31 +134,63 @@ export default function SignIn() {
            <UnStableCurvedLoopMarquee text="💈 A sua barbearia em suas mãos ✂️" fontSize={90} curve={150}/>
         <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}>
             <View style={styles.inputContainer}>
-            	<Text style={[styles.title2, {fontSize: RFValue(20)}]}>Crie a sua conta!</Text>
-            	<TextInput style={styles.input} placeholder="Nome" onChangeText={(t) => {
+            	<Text style={[styles.title2, {fontSize: RFValue(15)}]}>Crie a sua conta!</Text>
+                <TextInput
+                  maxLength={60}
+                  style={styles.input}
+                  placeholder="Nome"
+                  placeholderTextColor="white"
+                  onChangeText={(t) => {
                     setName(t);
-                    if (errors.name) {
-                        setErrors((prevErrors) => ({ ...prevErrors, name: undefined }));
-                    }
-              }} onChange={() => setOk(true)} placeholderTextColor="white"/>
-              {errors.name && <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{errors.name}</Text>}
-            	<TextInput style={styles.input} placeholder="Telefone" onChangeText={(t) => {
-                    setPhone(t);
-                    if (errors.phone) {
-                        setErrors((prevErrors) => ({ ...prevErrors, phone: undefined }));
-                    }
-              }} onChange={() => setOk(true)} placeholderTextColor="white" keyboardType="numeric"/>
-              {errors.phone && <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{errors.phone}</Text>}
-            	<TextInput style={styles.input} placeholder="Senha" onChangeText={(t) => {
-                    setPassword(t);
-                    if (errors.password) {
-                        setErrors((prevErrors) => ({ ...prevErrors, password: undefined }));
-                    }
-              }} onChange={() => setOk(true)} placeholderTextColor="white" secureTextEntry/>
-              {errors.password && <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{errors.password}</Text>}
+                    setErrors((prev) => ({ ...prev, name: validateName(t) }));
+                  }}
+                />
+                {!!errors.name && (
+                  <Text style={{ color: "red", fontSize: RFValue(12), textAlign: "center" }}>
+                    {errors.name}
+                  </Text>
+                )}
+            	<TextInput
+                    maxLength={9}
+                    style={styles.input}
+                    placeholder="Telefone"
+                    placeholderTextColor="white"
+                    keyboardType="numeric"
+                    onChangeText={(t) => {
+                        setPhone(t);
+                        setErrors((prev) => ({ ...prev, phone: validatePhone(t) }));
+                    }}
+                    />
+                    {!!errors.phone && (
+                    <Text style={{ color: "red", fontSize: RFValue(12), textAlign: "center" }}>
+                        {errors.phone}
+                    </Text>
+                    )}
+
+                <TextInput
+                    style={styles.input}
+                    placeholder="Senha"
+                    placeholderTextColor="white"
+                    secureTextEntry
+                    onChangeText={(t) => {
+                        setPassword(t);
+                        setErrors((prev) => ({ ...prev, password: validatePassword(t) }));
+                    }}
+                    />
+                    {!!errors.password && (
+                    <Text style={{ color: "red", fontSize: RFValue(12), textAlign: "center" }}>
+                        {errors.password}
+                    </Text>
+                    )}
               <TouchableOpacity style={styles.entrarButton} onPress={handleSignIn} disabled={loading}>
-                <Text>{ loading ? "Criando..." : "Cria conta"}</Text>
+                {loading ? (
+                  <ActivityIndicator
+                    color="black"
+                    size={RFValue(13)}
+                    style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
+                  />):(<Text>Criar conta</Text>)}
               </TouchableOpacity>
+            {serverResponse ? <Text style={{color: "red", fontSize: RFValue(12), textAlign: "center"}}>{serverResponse}</Text> : null}
             </View>
 			  <Text style={styles.title3}>Já tens uma conta? <Text onPress={() => routes.navigate("/logIn")} style={styles.link}>Faça login</Text></Text>
         </KeyboardAvoidingView>

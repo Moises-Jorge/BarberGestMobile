@@ -55,9 +55,9 @@ export const styles = StyleSheet.create({
         alignItems: "center",
         backgroundColor: "#141414ff",
         borderColor: "#1b1b1bff",
-        borderWidth: 3,
+        borderWidth: 2,
         alignSelf: "center",
-        gap: 25,
+        gap: 15,
         padding: 20,
         borderRadius: 30
     },
@@ -65,16 +65,18 @@ export const styles = StyleSheet.create({
     {
         backgroundColor: "#363636ff",
         borderColor: "#4d4d4dff",
-        borderWidth: 3,
+        borderWidth: 2,
         padding: 10,
         borderRadius: 50,
         width: width * .65,
+        maxWidth: 300,
         color: "white",
     },
     entrarButton: {
         marginTop: 10,
         backgroundColor: "cyan",
         width: width * .65,
+        maxWidth: 300,
         padding: 10,
         borderRadius: 50,
         alignItems: "center"
@@ -157,8 +159,7 @@ export const styles = StyleSheet.create({
     {
         backgroundColor: "#141414ff",
         borderColor: "#1d1d1dff",
-        borderWidth: 3,
-        width: width * 0.10,
+ borderWidth: 2,        width: width * 0.10,
         height: width * 0.10,
         borderRadius: (width * 0.10) / 2,
         marginTop: 20,
@@ -224,8 +225,7 @@ export const styles = StyleSheet.create({
         marginTop: 10,
         //backgroundColor: "#1d1d1dff",
         borderColor: "#1d1d1dff",
-        borderWidth: 3,
-        alignSelf: "center",
+ borderWidth: 2,        alignSelf: "center",
         borderRadius: 30,
         flexDirection: "row",
         justifyContent: "space-between"
@@ -239,8 +239,7 @@ export const styles = StyleSheet.create({
         paddingVertical: 10,
         alignSelf: "center",
         borderColor: "#1d1d1dff",
-        borderWidth: 3,
-        paddingVertical: 15,
+ borderWidth: 2,        paddingVertical: 15,
         top: 10,
         borderRadius: 15,
     },
@@ -253,8 +252,7 @@ export const styles = StyleSheet.create({
     {
         backgroundColor: "#141414ff",
         borderColor: "#1d1d1dff",
-        borderWidth: 3,
-        height: width * 0.10,
+ borderWidth: 2,        height: width * 0.10,
         width: width * 0.10,
         borderRadius: (width * 0.10) / 2,
         alignItems: "center",
@@ -271,8 +269,7 @@ export const styles = StyleSheet.create({
     {
         backgroundColor: "#141414ff",
         borderColor: "#1d1d1dff",
-        borderWidth: 3,
-        height: width * 0.10,
+ borderWidth: 2,        height: width * 0.10,
         width: width * 0.10,
         borderRadius: (width * 0.10) / 2,
         alignSelf: "flex-end",
@@ -285,8 +282,7 @@ export const styles = StyleSheet.create({
         backgroundColor: "#141414ff",
         borderColor: "#1d1d1dff",
         borderRadius: 30,
-        borderWidth: 3,
-        padding: 30,
+ borderWidth: 2,        padding: 30,
         alignSelf: "center",
     }
     /* barbImageCard:
